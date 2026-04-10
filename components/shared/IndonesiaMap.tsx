@@ -216,7 +216,7 @@ const isDapilMatch = (masterDapil: string, memberDapil: string) => {
 
 // CSS Kustom untuk Scrollbar di dalam Popup Leaflet
 const CustomPopupStyles = () => (
-  <style dangerouslySetContent={{
+  <style dangerouslySetInnerHTML={{
     __html: `
       .custom-popup-scrollbar::-webkit-scrollbar {
         width: 6px;
@@ -398,10 +398,10 @@ const IndonesiaMap = ({ members = [] }: IndonesiaMapProps) => {
           let statusLabel = "Tidak Ada Wakil";
 
           if (golkarSeats === 1) {
-              fillColor = "#eab308"; // Kuning/Gold (1 Kursi) - Lebi blend dengan warna Golkar
+              fillColor = "#15803d"; // Hijau (1 Kursi)
               statusLabel = "Pemenang (1 Kursi)";
           } else if (golkarSeats > 1) {
-              fillColor = "#ca8a04"; // Kuning Tua/Emas (>1 Kursi)
+              fillColor = "#14532d"; // Hijau Tua (>1 Kursi)
               statusLabel = `Basis Kuat (${golkarSeats} Kursi)`;
           }
           
@@ -446,7 +446,7 @@ const IndonesiaMap = ({ members = [] }: IndonesiaMapProps) => {
 
           circle.bindPopup(`
             <div style="font-family: inherit; min-width: 260px; padding: 2px;">
-              <div style="display: flex; align-items: center; gap: 8px; border-bottom: 2px solid ${fillColor === '#ef4444' ? '#fecaca' : '#fef08a'}; padding-bottom: 10px; margin-bottom: 12px;">
+              <div style="display: flex; align-items: center; gap: 8px; border-bottom: 2px solid ${fillColor === '#ef4444' ? '#fecaca' : '#bbf7d0'}; padding-bottom: 10px; margin-bottom: 12px;">
                 <div style="width: 12px; height: 12px; border-radius: 50%; background: ${fillColor}; flex-shrink: 0;"></div>
                 <div>
                   <h3 style="margin: 0; font-size: 16px; font-weight: 800; color: #0f172a; line-height: 1.2;">${dapil.dapil}</h3>
@@ -548,8 +548,8 @@ const IndonesiaMap = ({ members = [] }: IndonesiaMapProps) => {
               </div>
             ) : (
               <div className="flex flex-col gap-2">
-                <div className="flex items-center gap-2.5"><div className="w-3.5 h-3.5 rounded-full bg-[#ca8a04] shadow-inner border border-white/40"></div> <span className="text-xs font-bold text-slate-700">Basis Kuat (&gt;1 Kursi)</span></div>
-                <div className="flex items-center gap-2.5"><div className="w-3.5 h-3.5 rounded-full bg-[#eab308] shadow-inner border border-white/40"></div> <span className="text-xs font-bold text-slate-700">1 Kursi</span></div>
+                <div className="flex items-center gap-2.5"><div className="w-3.5 h-3.5 rounded-full bg-[#14532d] shadow-inner border border-white/40"></div> <span className="text-xs font-bold text-slate-700">Basis Kuat (&gt;1 Kursi)</span></div>
+                <div className="flex items-center gap-2.5"><div className="w-3.5 h-3.5 rounded-full bg-[#15803d] shadow-inner border border-white/40"></div> <span className="text-xs font-bold text-slate-700">1 Kursi</span></div>
                 <div className="flex items-center gap-2.5"><div className="w-3.5 h-3.5 rounded-full bg-[#ef4444] shadow-inner border border-white/40"></div> <span className="text-xs font-bold text-slate-700">0 Kursi (Kosong)</span></div>
               </div>
             )}
