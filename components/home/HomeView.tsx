@@ -11,7 +11,13 @@ import {
 
 /**
  * CATATAN UNTUK USER:
- * Saya telah mengonsolidasikan data mock ke dalam file ini untuk menghindari build error.
+ * Di lingkungan preview ini, pemanggilan komponen terpisah (IndonesiaMap) 
+ * dari folder lain memicu error. Oleh karena itu, saya menggunakan MapPlaceholder di sini.
+ * * SAAT COPY KE PROJECT LOKAL LO:
+ * 1. Hapus komponen MapPlaceholder di bawah ini.
+ * 2. Uncomment import ini: 
+ * import IndonesiaMap from '@/components/shared/IndonesiaMap';
+ * 3. Ganti <MapPlaceholder /> di baris ke-451 menjadi <IndonesiaMap members={members} />
  */
 
 // --- DATA MOCK ---
@@ -86,6 +92,7 @@ const MapPlaceholder = () => (
     <MapPin className="w-12 h-12 text-slate-300 mb-4" />
     <p className="text-slate-500 font-bold">Modul Peta Interaktif</p>
     <p className="text-slate-400 text-sm">Preview peta geospasial memerlukan konfigurasi Leaflet lokal.</p>
+    <p className="text-yellow-600 text-xs mt-2 font-medium bg-yellow-50 px-3 py-1 rounded-md">Silakan gunakan komponen asli di repo lokal Anda.</p>
   </div>
 );
 
