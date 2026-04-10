@@ -89,7 +89,13 @@ const MapPlaceholder = () => (
   </div>
 );
 
-export const HomeView = () => {
+// Definisikan props agar Next.js di local bisa mengirim data
+interface HomeViewProps {
+  initialMembers?: any[];
+  komisiList?: string[];
+}
+
+export const HomeView = ({ initialMembers: propsMembers, komisiList: propsKomisi }: HomeViewProps = {}) => {
   // States
   const [search, setSearch] = useState('');
   const [activeKomisi, setActiveKomisi] = useState('Semua');
@@ -97,8 +103,9 @@ export const HomeView = () => {
   const [currentTime, setCurrentTime] = useState<string>('');
   const [greeting, setGreeting] = useState('Selamat Datang');
 
-  const members = MOCK_MEMBERS;
-  const komisi = ['Semua', ...KOMISI_LIST];
+  // Fallback ke data internal jika props belum terkirim dengan sempurna
+  const members = propsMembers || MOCK_MEMBERS;
+  const komisi = propsKomisi || ['Semua', ...KOMISI_LIST];
 
   // Set Waktu dan Greeting
   useEffect(() => {
