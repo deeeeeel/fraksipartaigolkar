@@ -7,12 +7,12 @@ import { useRouter } from 'next/navigation';
 import { 
   Search, MapPin, Users, Newspaper, Zap, Bell, 
   TrendingUp, Filter, ChevronRight, Award, Menu,
-  Activity, AlertCircle
+  Activity, AlertCircle, BarChart3, ChevronDown
 } from 'lucide-react';
 import { MOCK_MEMBERS, KOMISI_LIST } from '@/lib/data';
 import IndonesiaMap from '@/components/shared/IndonesiaMap';
-import ElectionTrend from '@/components/home/ElectionTrend';
-
+// Asumsi komponen ini ada, jika tidak ada, bisa dikomen dulu
+// import ElectionTrend from '@/components/home/ElectionTrend';
 import MOCK_NEWS from '@/lib/news.json';
 
 interface HomeViewProps {
@@ -26,423 +26,322 @@ export const HomeView = ({ initialMembers: propsMembers, komisiList: propsKomisi
   // States
   const [search, setSearch] = useState('');
   const [activeKomisi, setActiveKomisi] = useState('Semua');
-  const [count, setCount] = useState(0);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [visibleCount, setVisibleCount] = useState(6);
-  const [activeTab, setActiveTab] = useState('home');
+  const [activeTab, setActiveTab] = useState<'peta' | 'direktori' | 'berita'>('peta');
   const [currentTime, setCurrentTime] = useState<string>('');
-  
-  const scrollToSection = (id: string) => {
-    setActiveTab(id);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-  
-  const initialMembers = useMemo(() => MOCK_MEMBERS, []);
+  const [greeting, setGreeting] = useState('Selamat Datang');
 
-  // Clock
+  const members = propsMembers || MOCK_MEMBERS;
+  const komisi = propsKomisi || ['Semua', ...KOMISI_LIST];
+
+  // Set Waktu dan Greeting
   useEffect(() => {
-    setCurrentTime(new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' WIB');
-    const timer = setInterval(() => {
-      setCurrentTime(new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' WIB');
-    }, 1000);
+    const updateTime = () => {
+      const now = new Date();
+      setCurrentTime(now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }));
+      
+      const hour = now.getHours();
+      if (hour < 11) setGreeting('Selamat Pagi');
+      else if (hour < 15) setGreeting('Selamat Siang');
+      else if (hour < 18) setGreeting('Selamat Sore');
+      else setGreeting('Selamat Malam');
+    };
+    
+    updateTime();
+    const timer = setInterval(updateTime, 60000);
     return () => clearInterval(timer);
   }, []);
-  
-  // Odometer Effect & Live Auto-Increment
-  useEffect(() => {
-    let start = 0;
-    const end = 12450;
-    const duration = 2000;
-    const increment = end / (duration / 16);
-    const timer = setInterval(() => {
-      start += increment;
-      if (start >= end) {
-        setCount(end);
-        clearInterval(timer);
-      } else {
-        setCount(Math.floor(start));
-      }
-    }, 16);
 
-    // Fake live data stream after initial counter
-    const liveTick = setInterval(() => {
-      if (Math.random() > 0.6) {
-        setCount(prev => prev + Math.floor(Math.random() * 3) + 1);
-      }
-    }, 3500);
-
-    return () => {
-      clearInterval(timer);
-      clearInterval(liveTick);
-    };
-  }, []);
-
-  // Scroll Header Effect
-  useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const komisiList = ['Semua', ...KOMISI_LIST];
-
-  // Smart Filtering
+  // Filter Members
   const filteredMembers = useMemo(() => {
-    return initialMembers.filter(member => {
-      const matchSearch = member.name.toLowerCase().includes(search.toLowerCase()) || 
-                          member.dapil.toLowerCase().includes(search.toLowerCase());
-      const matchKomisi = activeKomisi === 'Semua' || member.komisi === activeKomisi;
-      return matchSearch && matchKomisi;
+    return members.filter((m: any) => {
+      const matchName = m.name.toLowerCase().includes(search.toLowerCase());
+      const matchDapil = m.dapil?.toLowerCase().includes(search.toLowerCase());
+      const matchKomisi = activeKomisi === 'Semua' || m.komisi?.includes(activeKomisi);
+      return (matchName || matchDapil) && matchKomisi;
     });
-  }, [search, activeKomisi, initialMembers]);
-
-  // Reset pagination when search/filter changes
-  useEffect(() => {
-    setVisibleCount(6);
-  }, [search, activeKomisi]);
+  }, [search, activeKomisi, members]);
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-32 lg:pb-12 relative font-sans overflow-x-hidden selection:bg-yellow-200">
+    <div className="min-h-screen bg-[#F8FAFC] pb-24 md:pb-0 font-sans selection:bg-yellow-200">
       
-      {/* Ambient Glassmorphism Orbs */}
-      <div className="fixed top-0 left-0 w-[50vw] h-[50vw] bg-yellow-400/10 rounded-full blur-[100px] pointer-events-none animate-pulse duration-[10s] -translate-x-1/4 -translate-y-1/4 z-0"></div>
-      <div className="fixed bottom-0 right-0 w-[60vw] h-[60vw] bg-emerald-400/5 rounded-full blur-[120px] pointer-events-none animate-pulse duration-[15s] translate-x-1/3 translate-y-1/3 z-0"></div>
-      
-      <div className="max-w-7xl mx-auto relative z-10">
-        {/* Dynamic Header */}
-        <header className={`sticky top-0 z-[100] px-6 py-5 transition-all duration-500 ${isScrolled ? 'bg-white/80 backdrop-blur-2xl shadow-lg border-b border-neutral-100' : 'bg-transparent'}`}>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3 cursor-pointer group" onClick={() => scrollToSection('home')}>
-              <div className="w-10 h-10 bg-yellow-400 rounded-2xl flex items-center justify-center shadow-[0_4px_20px_rgba(250,204,21,0.4)] group-active:scale-95 transition-all duration-300 border border-yellow-300">
-                <Zap size={20} fill="white" className="text-white drop-shadow-md" />
+      {/* 1. EXECUTIVE HERO SECTION */}
+      <div className="relative bg-slate-900 pt-8 pb-32 px-4 md:px-8 overflow-hidden">
+        {/* Abstract Background Decoration */}
+        <div className="absolute top-0 right-0 -translate-y-12 translate-x-1/3 w-[600px] h-[600px] bg-yellow-400/20 rounded-full blur-[100px] pointer-events-none"></div>
+        <div className="absolute bottom-0 left-0 translate-y-1/3 -translate-x-1/3 w-[400px] h-[400px] bg-blue-500/20 rounded-full blur-[80px] pointer-events-none"></div>
+
+        <div className="max-w-7xl mx-auto relative z-10">
+          {/* Topbar */}
+          <div className="flex justify-between items-center mb-12">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-yellow-400 rounded-xl flex items-center justify-center shadow-lg shadow-yellow-400/20">
+                <Award className="text-slate-900 w-6 h-6" />
               </div>
               <div>
-                <h1 className="text-xs font-black uppercase tracking-widest text-neutral-900 leading-none group-hover:text-yellow-600 transition-colors">Dashboard 102</h1>
-                <div className="flex items-center gap-1.5 mt-1">
-                   <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_5px_rgba(16,185,129,0.8)]"></div>
-                   <p className="text-[8px] font-bold text-neutral-500 uppercase tracking-widest">{currentTime || 'CONNECTING...'}</p>
-                </div>
+                <h1 className="text-white font-black text-xl tracking-tight leading-none">F-PG</h1>
+                <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">DPR Republik Indonesia</p>
               </div>
             </div>
-            <div className="flex gap-2 items-center">
-              <div className="hidden lg:flex items-center gap-8 mr-6">
-                <button onClick={() => scrollToSection('anggota')} className={`text-[10px] font-black uppercase transition-colors ${activeTab === 'anggota' ? 'text-yellow-600' : 'text-neutral-500 hover:text-neutral-900'}`}>Anggota</button>
-                <button onClick={() => scrollToSection('berita')} className={`text-[10px] font-black uppercase transition-colors ${activeTab === 'berita' ? 'text-yellow-600' : 'text-neutral-500 hover:text-neutral-900'}`}>Berita</button>
-                <button onClick={() => scrollToSection('dapil')} className={`text-[10px] font-black uppercase transition-colors ${activeTab === 'dapil' ? 'text-yellow-600' : 'text-neutral-500 hover:text-neutral-900'}`}>Dapil</button>
-                <button onClick={() => scrollToSection('analisis')} className={`text-[10px] font-black uppercase transition-colors ${activeTab === 'analisis' ? 'text-yellow-600' : 'text-neutral-500 hover:text-neutral-900'}`}>Analisis</button>
-              </div>
-              <button className="p-2.5 bg-white rounded-xl border border-neutral-100 text-neutral-400 shadow-sm hover:shadow-md transition-all"><Bell size={18} /></button>
-              <button className="p-2.5 bg-neutral-900 rounded-xl text-white shadow-lg lg:hidden active:scale-95 transition-transform"><Menu size={18} /></button>
+            
+            <div className="hidden md:flex items-center gap-6">
+              <span className="text-slate-300 text-sm font-medium flex items-center gap-2">
+                <Activity className="w-4 h-4 text-green-400" />
+                Live Update Data
+              </span>
+              <div className="h-4 w-[1px] bg-slate-700"></div>
+              <span className="text-slate-400 text-sm font-medium">{currentTime}</span>
+            </div>
+
+            <button className="md:hidden text-white bg-slate-800 p-2 rounded-lg border border-slate-700">
+              <Bell className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Hero Content */}
+          <div className="max-w-3xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800/50 border border-slate-700 backdrop-blur-md mb-6">
+              <span className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse"></span>
+              <span className="text-xs font-bold text-slate-300 tracking-wide uppercase">{greeting}, Rakyat Indonesia</span>
+            </div>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-6 leading-[1.1] tracking-tight">
+              Kawal Aspirasi,<br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-500">Bangun Bangsa.</span>
+            </h2>
+            <p className="text-slate-400 text-base md:text-lg max-w-xl font-medium leading-relaxed">
+              Portal informasi resmi dan analitik geospasial Fraksi Partai Golkar DPR RI Periode 2024-2029. Transparan, akuntabel, dan berbasis data.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* 2. QUICK STATS (BENTO CARDS) - Overlapping Hero */}
+      <div className="max-w-7xl mx-auto px-4 md:px-8 -mt-20 relative z-20">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+          <div className="bg-white p-5 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 flex flex-col justify-between group hover:-translate-y-1 transition-transform duration-300">
+            <div className="w-10 h-10 rounded-xl bg-yellow-50 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <Users className="w-5 h-5 text-yellow-600" />
+            </div>
+            <div>
+              <p className="text-3xl font-black text-slate-800 tracking-tight">102</p>
+              <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mt-1">Kursi Parlemen</p>
             </div>
           </div>
-        </header>
-
-        {/* Tech Command Center News Ticker */}
-        <div className="px-6 mt-2 relative z-10 w-full overflow-hidden">
-           <style dangerouslySetInnerHTML={{__html: `
-            @keyframes marquee {
-              0% { transform: translateX(0%); }
-              100% { transform: translateX(-50%); }
-            }
-            .animate-marquee {
-              display: flex;
-              width: max-content;
-              animation: marquee 30s linear infinite;
-            }
-            .animate-marquee:hover {
-              animation-play-state: paused;
-            }
-          `}} />
-          <div className="bg-slate-900/95 backdrop-blur-xl border border-slate-700/50 rounded-2xl py-2.5 lg:py-3 overflow-hidden flex shadow-[0_10px_30px_rgba(15,23,42,0.15)] relative cursor-default">
-            
-            {/* Live Indicator Overlay */}
-            <div className="absolute inset-y-0 left-0 bg-slate-900 z-20 flex items-center px-4 lg:px-6 border-r border-slate-700/50 shadow-[10px_0_20px_rgba(15,23,42,0.95)]">
-                <div className="flex items-center gap-2 lg:gap-2.5">
-                   <div className="w-2 h-2 rounded-full bg-red-500 animate-[pulse_1.5s_infinite] shadow-[0_0_8px_rgba(239,68,68,0.9)]"></div>
-                   <span className="text-[9px] lg:text-[10px] font-black text-white tracking-[0.2em] uppercase">LIVE</span>
-                </div>
+          
+          <div className="bg-white p-5 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 flex flex-col justify-between group hover:-translate-y-1 transition-transform duration-300">
+            <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <Activity className="w-5 h-5 text-blue-600" />
             </div>
+            <div>
+              <p className="text-3xl font-black text-slate-800 tracking-tight">23.2<span className="text-lg">Jt</span></p>
+              <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mt-1">Suara Sah (2024)</p>
+            </div>
+          </div>
 
-            {/* Gradient Masks */}
-            <div className="absolute inset-y-0 left-[70px] lg:left-[100px] w-8 lg:w-16 bg-gradient-to-r from-slate-900 to-transparent z-10 pointer-events-none"></div>
-            <div className="absolute inset-y-0 right-0 w-8 lg:w-16 bg-gradient-to-l from-slate-900 to-transparent z-10 pointer-events-none"></div>
+          <div className="bg-white p-5 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 flex flex-col justify-between group hover:-translate-y-1 transition-transform duration-300">
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <MapPin className="w-5 h-5 text-emerald-600" />
+            </div>
+            <div>
+              <p className="text-3xl font-black text-slate-800 tracking-tight">84</p>
+              <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mt-1">Daerah Pemilihan</p>
+            </div>
+          </div>
 
-            <div className="animate-marquee flex items-center gap-10 text-[9px] lg:text-[10px] font-bold uppercase tracking-[0.1em] pl-[80px] lg:pl-[120px] pr-8 text-slate-300">
-               {/* Set 1 */}
-               <span className="flex items-center gap-2 hover:text-white transition-colors"><div className="w-1.5 h-1.5 bg-yellow-400 rounded-full"></div> <strong className="text-white font-black">ASPIRASI:</strong> 320 Masukan baru dari Jabar hari ini</span>
-               <span className="flex items-center gap-2 hover:text-white transition-colors"><div className="w-1.5 h-1.5 bg-emerald-400 rounded-full"></div> <strong className="text-white font-black">SENTIMEN:</strong> RUU Penyiaran di angka Netral (45%)</span>
-               <span className="flex items-center gap-2 hover:text-white transition-colors"><div className="w-1.5 h-1.5 bg-red-400 rounded-full"></div> <strong className="text-white font-black">HOT ISU:</strong> Digitalisasi Pertanian jadi Trending #1</span>
-               <span className="flex items-center gap-2 hover:text-white transition-colors"><div className="w-1.5 h-1.5 bg-blue-400 rounded-full"></div> <strong className="text-white font-black">KINERJA:</strong> Kepuasan layanan Dapil 102 naik 4.2%</span>
-               {/* Set 2 (Duplicate for loop) */}
-               <span className="flex items-center gap-2 hover:text-white transition-colors"><div className="w-1.5 h-1.5 bg-yellow-400 rounded-full"></div> <strong className="text-white font-black">ASPIRASI:</strong> 320 Masukan baru dari Jabar hari ini</span>
-               <span className="flex items-center gap-2 hover:text-white transition-colors"><div className="w-1.5 h-1.5 bg-emerald-400 rounded-full"></div> <strong className="text-white font-black">SENTIMEN:</strong> RUU Penyiaran di angka Netral (45%)</span>
-               <span className="flex items-center gap-2 hover:text-white transition-colors"><div className="w-1.5 h-1.5 bg-red-400 rounded-full"></div> <strong className="text-white font-black">HOT ISU:</strong> Digitalisasi Pertanian jadi Trending #1</span>
-               <span className="flex items-center gap-2 hover:text-white transition-colors"><div className="w-1.5 h-1.5 bg-blue-400 rounded-full"></div> <strong className="text-white font-black">KINERJA:</strong> Kepuasan layanan Dapil 102 naik 4.2%</span>
+          <div className="bg-gradient-to-br from-yellow-400 to-yellow-500 p-5 rounded-2xl shadow-lg shadow-yellow-500/20 flex flex-col justify-between text-slate-900 group hover:-translate-y-1 transition-transform duration-300">
+            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform backdrop-blur-sm">
+              <TrendingUp className="w-5 h-5 text-slate-900" />
+            </div>
+            <div>
+              <p className="text-3xl font-black tracking-tight">#2</p>
+              <p className="text-xs font-bold text-slate-800 uppercase tracking-wider mt-1">Peringkat Nasional</p>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* --- DYNAMIC SPA BODY --- */}
-        <div className="min-h-[50vh] pb-10">
-          
-          {/* TAB: ANALISIS & HOME PREVIEW */}
-          {(activeTab === 'home' || activeTab === 'analisis') && (
-            <section className="px-6 mt-4 grid grid-cols-12 gap-4 lg:gap-6">
+      {/* 3. MAIN DASHBOARD CONTENT */}
+      <div className="max-w-7xl mx-auto px-4 md:px-8 mt-12 mb-8">
+        
+        {/* Sleek Segmented Tabs */}
+        <div className="flex bg-slate-200/60 p-1.5 rounded-2xl mb-8 w-full md:w-fit backdrop-blur-sm border border-slate-200">
+          <button 
+            onClick={() => setActiveTab('peta')}
+            className={`flex-1 md:flex-none px-6 py-3 rounded-xl text-sm font-bold transition-all duration-300 flex items-center justify-center gap-2 ${activeTab === 'peta' ? 'bg-white text-slate-800 shadow-[0_2px_10px_rgba(0,0,0,0.06)]' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'}`}
+          >
+            <MapPin className="w-4 h-4" /> Peta Geospasial
+          </button>
+          <button 
+            onClick={() => setActiveTab('direktori')}
+            className={`flex-1 md:flex-none px-6 py-3 rounded-xl text-sm font-bold transition-all duration-300 flex items-center justify-center gap-2 ${activeTab === 'direktori' ? 'bg-white text-slate-800 shadow-[0_2px_10px_rgba(0,0,0,0.06)]' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'}`}
+          >
+            <Users className="w-4 h-4" /> Direktori Anggota
+          </button>
+          <button 
+            onClick={() => setActiveTab('berita')}
+            className={`hidden md:flex flex-1 md:flex-none px-6 py-3 rounded-xl text-sm font-bold transition-all duration-300 items-center justify-center gap-2 ${activeTab === 'berita' ? 'bg-white text-slate-800 shadow-[0_2px_10px_rgba(0,0,0,0.06)]' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'}`}
+          >
+            <Newspaper className="w-4 h-4" /> Update Fraksi
+          </button>
+        </div>
+
+        {/* TAB 1: PETA GEOSPASIAL */}
+        {activeTab === 'peta' && (
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+             <div className="bg-white p-2 md:p-6 rounded-[2.5rem] shadow-sm border border-slate-100">
+               <IndonesiaMap members={members} />
+             </div>
+          </div>
+        )}
+
+        {/* TAB 2: DIREKTORI ANGGOTA */}
+        {activeTab === 'direktori' && (
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+            {/* Search & Filter Bar */}
+            <div className="flex flex-col md:flex-row gap-4 mb-8">
+              <div className="relative flex-1">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <Search className="h-5 w-5 text-slate-400" />
+                </div>
+                <input
+                  type="text"
+                  placeholder="Cari nama anggota atau dapil..."
+                  className="w-full pl-11 pr-4 py-4 bg-white border border-slate-200 rounded-2xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent shadow-sm transition-shadow"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+              </div>
               
-              {/* Main Card */}
-              <div className="col-span-12 lg:col-span-5 bg-neutral-900 border border-neutral-800 hover:border-yellow-500/30 rounded-[2.5rem] p-8 lg:p-10 text-white relative overflow-hidden shadow-[0_20px_40px_rgba(0,0,0,0.15)] flex flex-col justify-center transition-colors duration-500 group animate-in fade-in slide-in-from-bottom-8 duration-700" style={{ animationFillMode: 'both' }}>
-                <div className="absolute top-0 right-0 w-48 h-48 bg-yellow-400/10 rounded-full blur-[80px] -mr-16 -mt-16 group-hover:bg-yellow-400/20 transition-colors duration-500"></div>
-                <div className="relative z-10">
-                  <h2 className="text-2xl lg:text-3xl font-black leading-tight mb-4 lg:mb-8 tracking-tight">Dashboard Kinerja <br/><span className="text-yellow-400">Legislator Fraksi.</span></h2>
-                  <div className="flex items-end gap-2">
-                    <span className="text-4xl lg:text-5xl font-black tracking-tighter text-yellow-400 drop-shadow-md">{count.toLocaleString()}</span>
-                    <span className="text-[9px] lg:text-[10px] font-bold text-neutral-500 uppercase mb-1.5 lg:mb-2 tracking-widest border border-neutral-800 px-2 py-1 rounded-md bg-neutral-900/50 backdrop-blur-sm">Aspirasi Masuk</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Trending Isu */}
-              <div className="col-span-12 lg:col-span-3 bg-gradient-to-br from-emerald-900 to-emerald-950 border border-emerald-800 rounded-[2rem] p-6 lg:p-8 text-white shadow-lg relative overflow-hidden group flex flex-col justify-end min-h-[160px] hover:shadow-emerald-900/50 hover:-translate-y-1 transition-all duration-300 animate-in fade-in slide-in-from-bottom-8 duration-700" style={{ animationDelay: '150ms', animationFillMode: 'both' }}>
-                <div className="absolute right-[-10px] top-[-10px] opacity-20 group-hover:scale-110 transition-transform duration-500"><TrendingUp size={80} /></div>
-                
-                {/* Sparkline Graphic */}
-                <div className="absolute inset-x-0 bottom-0 opacity-40 group-hover:opacity-80 transition-opacity duration-500 flex items-end">
-                  <svg viewBox="0 0 100 40" className="w-full h-20" preserveAspectRatio="none">
-                    <path d="M0 40 L10 30 L20 35 L30 20 L40 25 L50 10 L60 15 L70 5 L80 10 L90 0 L100 0 L100 40 Z" fill="url(#sparkline-gradient)" />
-                    <path d="M0 40 L10 30 L20 35 L30 20 L40 25 L50 10 L60 15 L70 5 L80 10 L90 0" fill="none" stroke="#fbbf24" strokeWidth="1.5" />
-                    <defs>
-                      <linearGradient id="sparkline-gradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#fbbf24" stopOpacity="0.4" />
-                        <stop offset="100%" stopColor="#fbbf24" stopOpacity="0" />
-                      </linearGradient>
-                    </defs>
-                  </svg>
-                </div>
-
-                <div className="relative z-10">
-                  <p className="text-[9px] lg:text-[10px] font-black uppercase text-emerald-300 mb-1">Trending Isu</p>
-                  <p className="text-sm lg:text-lg font-black leading-tight text-white group-hover:text-yellow-300 transition-colors">Digitalisasi Pertanian</p>
-                </div>
-              </div>
-              
-              {/* AI Sentiment Insight */}
-              <div className="col-span-12 lg:col-span-4 bg-white/60 backdrop-blur-2xl border border-white/60 rounded-[2.5rem] p-6 lg:p-8 shadow-[0_8px_30px_rgba(0,0,0,0.04)] hover:shadow-xl hover:border-yellow-200/50 transition-all hover:-translate-y-1 duration-300 group flex flex-col justify-center animate-in fade-in slide-in-from-bottom-8 duration-700" style={{ animationDelay: '300ms', animationFillMode: 'both' }}>
-                <div className="flex items-center justify-between mb-5 lg:mb-6">
-                   <div className="flex items-center gap-2">
-                     <Activity size={20} className="text-neutral-400 group-hover:text-yellow-500 transition-colors" />
-                     <p className="text-[10px] lg:text-[11px] font-black uppercase text-neutral-400 tracking-widest">Sentimen Nasional</p>
-                   </div>
-                   <div className="px-2.5 py-1 bg-green-50 rounded-lg text-[9px] font-black text-green-600 uppercase border border-green-100 flex items-center gap-1"><TrendingUp size={10}/> +2.4%</div>
-                </div>
-                
-                <div className="space-y-4 lg:space-y-5">
-                  <div className="flex items-center gap-4">
-                    <div className="w-8 text-[9px] lg:text-[10px] font-black text-neutral-500 uppercase tracking-widest text-right">Pos</div>
-                    <div className="flex-1 h-2 lg:h-2.5 bg-neutral-100 rounded-full overflow-hidden relative">
-                      <div className="absolute inset-y-0 left-0 w-[68%] bg-green-500 rounded-full group-hover:shadow-[0_0_12px_rgba(34,197,94,0.8)] transition-all duration-300"></div>
-                    </div>
-                    <div className="w-8 text-[9px] lg:text-[10px] font-black text-green-600">68%</div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <div className="w-8 text-[9px] lg:text-[10px] font-black text-neutral-500 uppercase tracking-widest text-right">Net</div>
-                    <div className="flex-1 h-2 lg:h-2.5 bg-neutral-100 rounded-full overflow-hidden relative">
-                      <div className="absolute inset-y-0 left-0 w-[22%] bg-yellow-400 rounded-full group-hover:shadow-[0_0_12px_rgba(250,204,21,0.8)] transition-all duration-300"></div>
-                    </div>
-                    <div className="w-8 text-[9px] lg:text-[10px] font-black text-yellow-600">22%</div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <div className="w-8 text-[9px] lg:text-[10px] font-black text-neutral-500 uppercase tracking-widest text-right">Neg</div>
-                    <div className="flex-1 h-2 lg:h-2.5 bg-neutral-100 rounded-full overflow-hidden relative">
-                      <div className="absolute inset-y-0 left-0 w-[10%] bg-red-500 rounded-full group-hover:shadow-[0_0_12px_rgba(239,68,68,0.8)] transition-all duration-300"></div>
-                    </div>
-                    <div className="w-8 text-[9px] lg:text-[10px] font-black text-red-600">10%</div>
-                  </div>
-                </div>
-              </div>
-            </section>
-          )}
-
-          {/* TAB: DEEP DIVE ANALISIS (ELECTION TREND) */}
-          {activeTab === 'analisis' && (
-            <section className="px-6 mt-8 lg:mt-10 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100">
-               <ElectionTrend />
-            </section>
-          )}
-
-          {/* TAB: MEDIA INSIGHT (CAROUSEL PREVIEW FOR HOME) */}
-          {activeTab === 'home' && (
-            <section className="px-6 mt-10 lg:mt-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <div className="flex items-center justify-between mb-4 lg:mb-6">
-                <h3 className="text-xs lg:text-sm font-black text-neutral-900 flex items-center gap-2 tracking-widest uppercase">
-                  <Zap className="text-yellow-500" size={16} fill="currentColor" /> Media Insight
-                </h3>
-                <button onClick={() => scrollToSection('berita')} className="text-[10px] lg:text-xs font-black text-neutral-400 uppercase tracking-widest hover:text-yellow-600 transition-colors">Lihat Semua</button>
-              </div>
-              <div className="flex gap-4 overflow-x-auto no-scrollbar pb-4 snap-x">
-                {MOCK_NEWS.map(news => (
-                  <Link key={news.id} href={(news as any).url || '#'} target="_blank" rel="noopener noreferrer" className="w-[280px] lg:w-[320px] shrink-0 bg-white/90 backdrop-blur-xl rounded-3xl border border-neutral-100 p-4 shadow-sm snap-center hover:shadow-2xl hover:border-yellow-200/60 hover:-translate-y-1 transition-all duration-300 group block">
-                    <div className="w-full h-32 lg:h-40 bg-neutral-50 rounded-2xl mb-4 overflow-hidden relative border border-neutral-100">
-                      <img src={news.image} alt={news.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                      <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-neutral-900 text-[9px] font-black uppercase px-2.5 py-1 rounded-lg shadow-sm border border-neutral-100">{news.tag}</div>
-                    </div>
-                    <h4 className="text-xs lg:text-sm font-black text-neutral-900 leading-snug line-clamp-2 mb-3 group-hover:text-yellow-600 transition-colors">{news.title}</h4>
-                    <div className="flex items-center gap-2">
-                       <div className="w-1.5 h-1.5 rounded-full bg-yellow-400"></div>
-                       <p className="text-[8px] font-black text-neutral-400 uppercase tracking-widest">{news.date}</p>
-                    </div>
-                  </Link>
+              <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 no-scrollbar">
+                {komisi.map((k: string) => (
+                  <button
+                    key={k}
+                    onClick={() => setActiveKomisi(k)}
+                    className={`px-5 py-3.5 rounded-2xl text-sm font-bold whitespace-nowrap transition-all border ${
+                      activeKomisi === k 
+                        ? 'bg-slate-800 text-white border-slate-800 shadow-md' 
+                        : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                    }`}
+                  >
+                    {k === 'Semua' ? 'Semua Komisi' : k}
+                  </button>
                 ))}
               </div>
-            </section>
-          )}
+            </div>
 
-          {/* TAB: BERITA (FULL PAGE GRID) */}
-          {activeTab === 'berita' && (
-            <section className="px-6 mt-6 lg:mt-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <div className="flex items-center justify-between mb-6 lg:mb-8">
-                <div>
-                  <h3 className="text-sm lg:text-base font-black text-neutral-900 flex items-center gap-2 tracking-widest uppercase">
-                    <Zap className="text-yellow-500" size={18} fill="currentColor" /> Media Insight
-                  </h3>
-                  <p className="text-[10px] font-bold text-neutral-400 mt-1 uppercase tracking-widest">Berita & Sorotan Fraksi Terkini</p>
-                </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6">
-                {MOCK_NEWS.map(news => (
-                  <Link key={news.id} href={(news as any).url || '#'} target="_blank" rel="noopener noreferrer" className="w-full bg-white/90 backdrop-blur-xl rounded-3xl border border-neutral-100 p-4 shadow-sm hover:shadow-2xl hover:border-yellow-200/60 hover:-translate-y-1 transition-all duration-300 group block">
-                    <div className="w-full h-40 lg:h-48 bg-neutral-50 rounded-2xl mb-4 overflow-hidden relative border border-neutral-100">
-                      <img src={news.image} alt={news.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                      <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-neutral-900 text-[9px] font-black uppercase px-2.5 py-1 rounded-lg shadow-sm border border-neutral-100">{news.tag}</div>
+            {/* Grid Members */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredMembers.length > 0 ? (
+                filteredMembers.map((member: any) => (
+                  <div key={member.id} className="bg-white rounded-3xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group cursor-pointer" onClick={() => router.push(`/anggota/${member.slug}`)}>
+                    <div className="h-48 bg-slate-100 relative overflow-hidden flex items-end justify-center">
+                       {/* Abstract pattern back of photo */}
+                       <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-slate-900 to-transparent"></div>
+                       <Image 
+                         src={member.image || "/api/placeholder/400/320"} 
+                         alt={member.name}
+                         width={200} height={200}
+                         className="object-cover object-bottom h-[90%] w-auto group-hover:scale-105 transition-transform duration-500 relative z-10"
+                       />
+                       <div className="absolute bottom-0 w-full h-1/2 bg-gradient-to-t from-slate-900/60 to-transparent z-20"></div>
+                       <span className="absolute bottom-3 left-4 z-30 text-[10px] font-black px-2 py-1 bg-yellow-400 text-slate-900 rounded-md uppercase tracking-wider shadow-sm">
+                         {member.komisi || 'Fraksi'}
+                       </span>
                     </div>
-                    <h4 className="text-xs lg:text-sm font-black text-neutral-900 leading-snug line-clamp-3 mb-4 group-hover:text-yellow-600 transition-colors">{news.title}</h4>
-                    <div className="flex items-center gap-2">
-                       <div className="w-1.5 h-1.5 rounded-full bg-yellow-400"></div>
-                       <p className="text-[8px] font-black text-neutral-400 uppercase tracking-widest">{news.date}</p>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </section>
-          )}
-
-          {/* TAB: ANGGOTA & HOME PREVIEW */}
-          {(activeTab === 'home' || activeTab === 'anggota') && (
-            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <section className="px-6 mt-6 lg:mt-8 lg:flex lg:items-center lg:justify-between lg:gap-8">
-                <div className="relative group mb-6 lg:mb-0 lg:w-96 shrink-0 z-20">
-                  <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-neutral-300 group-focus-within:text-yellow-500 transition-colors" size={20} />
-                  <input 
-                    type="text" 
-                    placeholder="Cari Nama Anggota atau Dapil..." 
-                    className="w-full bg-white border border-neutral-100 rounded-3xl pl-14 pr-6 py-5 text-sm font-bold shadow-sm focus:ring-4 focus:ring-yellow-400/10 outline-none transition-all"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                  />
-                </div>
-
-                <div className="flex gap-3 overflow-x-auto no-scrollbar py-2 lg:flex-wrap lg:justify-end">
-                  {komisiList.map((num) => (
-                    <button 
-                      key={num}
-                      onClick={() => setActiveKomisi(num === 'Semua' ? 'Semua' : `Komisi ${num}`)}
-                      className={`px-6 py-3 rounded-2xl text-[10px] font-black uppercase whitespace-nowrap transition-all ${
-                        (num === 'Semua' && activeKomisi === 'Semua') || activeKomisi === `Komisi ${num}`
-                        ? 'bg-yellow-400 text-neutral-900 shadow-lg shadow-yellow-200 scale-105' 
-                        : 'bg-white text-neutral-400 border border-neutral-100 hover:border-yellow-200'
-                      }`}
-                    >
-                      {num === 'Semua' ? 'Semua' : `Komisi ${num}`}
-                    </button>
-                  ))}
-                </div>
-              </section>
-
-              <main className="px-6 mt-8 lg:mt-10 mb-8">
-                <div className="flex items-center justify-between mb-4 lg:mb-6 lg:col-span-full">
-                    <h3 className="text-[10px] font-black text-neutral-400 uppercase tracking-widest flex items-center gap-1.5"><Users size={14}/> Anggota Terdaftar ({filteredMembers.length})</h3>
-                    <Filter size={14} className="text-neutral-300" />
-                </div>
-                
-                <div className="space-y-4 lg:space-y-0 lg:grid lg:grid-cols-2 xl:grid-cols-3 lg:gap-6">
-                  {filteredMembers.slice(0, visibleCount).map((member) => (
-                    <div 
-                      key={member.id} 
-                      onClick={() => router.push(`/anggota/${member.slug}`)}
-                      className="bg-white rounded-[2rem] border border-neutral-50 p-4 lg:p-5 shadow-sm hover:shadow-xl active:scale-[0.98] transition-all flex items-center gap-4 cursor-pointer group"
-                    >
-                      <div className="w-16 h-16 lg:w-16 lg:h-16 rounded-2xl bg-neutral-50 overflow-hidden relative shrink-0 border border-neutral-100">
-                        <Image src={member.image} alt={member.name} fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
+                    <div className="p-5">
+                      <h3 className="font-bold text-slate-800 text-base leading-tight mb-1 group-hover:text-yellow-600 transition-colors line-clamp-1">{member.name}</h3>
+                      <div className="flex items-center text-slate-500 text-xs font-medium gap-1.5 mb-4">
+                        <MapPin className="w-3.5 h-3.5" />
+                        <span className="truncate">{member.dapil}</span>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className="text-sm lg:text-base font-black text-neutral-900 truncate">{member.name}</h4>
-                        <div className="flex items-center gap-2 mt-1.5">
-                           <span className="text-[8px] lg:text-[9px] font-black text-yellow-600 bg-yellow-50 border border-yellow-100/50 px-2 py-0.5 rounded-md uppercase">{member.komisi}</span>
-                           <span className="text-[9px] lg:text-[10px] font-bold text-neutral-400 uppercase tracking-tighter truncate">Dapil {member.dapil}</span>
+                      
+                      <div className="flex justify-between items-center pt-4 border-t border-slate-100">
+                        <div>
+                          <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Suara Sah</p>
+                          <p className="font-black text-slate-700 text-sm">{(Number(member.perolehan_suara)||0).toLocaleString('id-ID')}</p>
+                        </div>
+                        <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-yellow-50 group-hover:text-yellow-600 transition-colors">
+                          <ChevronRight className="w-4 h-4" />
                         </div>
                       </div>
-                      <div className="w-8 h-8 rounded-full bg-neutral-50 flex items-center justify-center text-neutral-300 group-hover:bg-yellow-400 group-hover:text-neutral-900 transition-colors shrink-0">
-                        <ChevronRight size={16} />
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="col-span-full py-20 flex flex-col items-center justify-center text-slate-400">
+                  <Search className="w-12 h-12 mb-4 opacity-20" />
+                  <p className="text-lg font-medium">Anggota tidak ditemukan</p>
+                  <p className="text-sm">Coba gunakan kata kunci atau filter lain.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* TAB 3: BERITA FRAKSI */}
+        {activeTab === 'berita' && (
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+               {MOCK_NEWS.map((news: any) => (
+                  <Link href={news.url} key={news.id} className="bg-white rounded-3xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-lg transition-all group flex flex-col h-full">
+                    <div className="relative h-56 overflow-hidden bg-slate-100">
+                      {news.image ? (
+                        <Image src={news.image} alt={news.title} fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-slate-200 text-slate-400"><Newspaper size={40}/></div>
+                      )}
+                      <div className="absolute top-4 left-4">
+                        <span className="bg-white/90 backdrop-blur-sm text-slate-800 text-[10px] font-black uppercase px-3 py-1.5 rounded-lg shadow-sm">
+                          {news.tag}
+                        </span>
                       </div>
                     </div>
-                  ))}
-                </div>
-
-                {filteredMembers.length === 0 && (
-                  <div className="text-center py-20 bg-white rounded-[3rem] border border-dashed border-neutral-200 mt-4">
-                    <Search size={40} className="mx-auto text-neutral-200 mb-4" />
-                    <p className="text-xs font-black text-neutral-400 uppercase tracking-widest">Data Tidak Ditemukan</p>
-                  </div>
-                )}
-
-                {/* Load More Button */}
-                {visibleCount < filteredMembers.length && (
-                  <div className="mt-8 flex justify-center w-full">
-                    <button 
-                      onClick={() => setVisibleCount(prev => prev + 6)}
-                      className="bg-white border border-neutral-200 text-neutral-500 hover:text-neutral-900 hover:border-neutral-300 hover:shadow-lg hover:scale-105 active:scale-95 px-8 py-4 rounded-[2rem] text-[10px] font-black uppercase tracking-widest shadow-sm transition-all flex items-center gap-3"
-                    >
-                       <Users size={16} /> Muat Lebih Banyak ({filteredMembers.length - visibleCount})
-                    </button>
-                  </div>
-                )}
-              </main>
-            </div>
-          )}
-
-          {/* TAB: DAPIL */}
-          {activeTab === 'dapil' && (
-            <section className="px-6 mt-6 lg:mt-8 animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col items-center justify-center min-h-[50vh]">
-               <div className="w-full max-w-5xl bg-white border border-neutral-200 rounded-[3rem] p-6 lg:p-10 text-center shadow-lg relative overflow-hidden">
-                  <div className="relative z-10">
-                    <h3 className="text-xl lg:text-2xl font-black text-neutral-900 mb-2">Peta Sebaran Fraksi Golkar</h3>
-                    <p className="text-[10px] font-bold text-neutral-400 mb-6 uppercase tracking-widest flex items-center justify-center gap-1.5"><MapPin size={12} className="text-yellow-500" fill="currentColor"/> Interaktif Map (Menunggu Integrasi Data Spasial)</p>
-                    
-                    <div className="w-full h-[350px] lg:h-[500px] bg-slate-50/50 rounded-[2rem] border border-slate-200 relative overflow-hidden group hover:border-yellow-300 transition-colors shadow-inner">
-                       <div className="absolute inset-0 z-0 opacity-20 hidden lg:block" style={{ backgroundImage: 'radial-gradient(#94a3b8 1px, transparent 1px)', backgroundSize: '30px 30px' }}></div>
-                       
-                       {/* Indonesia Interactive Map */}
-                       <div className="absolute inset-0 z-10 w-full h-full flex items-center justify-center">
-                           <IndonesiaMap />
-                       </div>
+                    <div className="p-6 flex flex-col flex-1">
+                      <p className="text-xs font-semibold text-yellow-600 mb-2">{news.date}</p>
+                      <h3 className="font-bold text-slate-800 text-lg leading-snug mb-4 group-hover:text-blue-600 transition-colors line-clamp-3">{news.title}</h3>
+                      <div className="mt-auto flex items-center text-slate-400 text-xs font-bold uppercase tracking-wider group-hover:text-slate-600 transition-colors">
+                        Baca Selengkapnya <ChevronRight className="w-4 h-4 ml-1" />
+                      </div>
                     </div>
-                  </div>
-               </div>
-            </section>
-          )}
-
-        </div>
-
-        {/* Floating Navbar (Mobile Only) */}
-        <nav className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[110] w-[90%] max-w-[400px] lg:hidden">
-          <div className="bg-neutral-900/95 backdrop-blur-2xl rounded-[3rem] p-3 flex items-center shadow-2xl border border-white/10">
-            <button onClick={() => scrollToSection('anggota')} className={`flex-1 flex flex-col items-center gap-1 ${activeTab === 'anggota' ? 'text-yellow-400' : 'text-neutral-500 hover:text-neutral-300 transition-colors'}`}><Users size={20} /><span className="text-[8px] font-black uppercase">Anggota</span></button>
-            <button onClick={() => scrollToSection('berita')} className={`flex-1 flex flex-col items-center gap-1 ${activeTab === 'berita' ? 'text-yellow-400' : 'text-neutral-500 hover:text-neutral-300 transition-colors'}`}><Newspaper size={20} /><span className="text-[8px] font-black uppercase">Berita</span></button>
-            <div onClick={() => scrollToSection('home')} className="w-14 h-14 bg-yellow-400 rounded-full -mt-12 border-8 border-[#F8FAFC] flex items-center justify-center text-neutral-900 shadow-xl active:scale-90 cursor-pointer transition-transform"><Zap size={24} fill="currentColor" /></div>
-            <button onClick={() => scrollToSection('dapil')} className={`flex-1 flex flex-col items-center gap-1 ${activeTab === 'dapil' ? 'text-yellow-400' : 'text-neutral-500 hover:text-neutral-300 transition-colors'}`}><MapPin size={20} /><span className="text-[8px] font-black uppercase">Dapil</span></button>
-            <button onClick={() => scrollToSection('analisis')} className={`flex-1 flex flex-col items-center gap-1 ${activeTab === 'analisis' ? 'text-yellow-400' : 'text-neutral-500 hover:text-neutral-300 transition-colors'}`}><TrendingUp size={20} /><span className="text-[8px] font-black uppercase">Analisis</span></button>
+                  </Link>
+               ))}
+            </div>
           </div>
-        </nav>
+        )}
       </div>
+
+      {/* 4. SLEEK MOBILE BOTTOM NAVIGATION (FLOATING DOCK) */}
+      <div className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-[340px] z-[100]">
+        <div className="bg-slate-900/95 backdrop-blur-xl border border-slate-700 shadow-2xl rounded-3xl p-2 flex items-center justify-between relative">
+            
+            <button onClick={() => setActiveTab('peta')} className={`flex-1 flex flex-col items-center justify-center py-2 transition-colors ${activeTab === 'peta' ? 'text-yellow-400' : 'text-slate-400 hover:text-slate-200'}`}>
+              <MapPin className="w-5 h-5 mb-1" />
+              <span className="text-[9px] font-bold uppercase tracking-wider">Peta</span>
+            </button>
+            
+            <button onClick={() => setActiveTab('direktori')} className={`flex-1 flex flex-col items-center justify-center py-2 transition-colors ${activeTab === 'direktori' ? 'text-yellow-400' : 'text-slate-400 hover:text-slate-200'}`}>
+              <Users className="w-5 h-5 mb-1" />
+              <span className="text-[9px] font-bold uppercase tracking-wider">Anggota</span>
+            </button>
+
+            {/* Center Main Action (Zap) */}
+            <div className="relative -top-8 px-2">
+              <div className="w-14 h-14 bg-gradient-to-b from-yellow-300 to-yellow-500 rounded-full flex items-center justify-center shadow-lg shadow-yellow-500/30 border-4 border-[#F8FAFC] transform active:scale-95 transition-transform cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+                <Zap className="w-6 h-6 text-slate-900" fill="currentColor" />
+              </div>
+            </div>
+
+            <button onClick={() => setActiveTab('berita')} className={`flex-1 flex flex-col items-center justify-center py-2 transition-colors ${activeTab === 'berita' ? 'text-yellow-400' : 'text-slate-400 hover:text-slate-200'}`}>
+              <Newspaper className="w-5 h-5 mb-1" />
+              <span className="text-[9px] font-bold uppercase tracking-wider">Berita</span>
+            </button>
+
+            <button onClick={() => router.push('/analisis')} className="flex-1 flex flex-col items-center justify-center py-2 text-slate-400 hover:text-slate-200 transition-colors">
+              <BarChart3 className="w-5 h-5 mb-1" />
+              <span className="text-[9px] font-bold uppercase tracking-wider">Data</span>
+            </button>
+        </div>
+      </div>
+
     </div>
   );
 };
