@@ -2,8 +2,9 @@
 
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { Member } from '@/types/member';
+import membersData from '@/lib/members.json'; // Langsung import fallback data dari JSON-nya
 
-// --- DATA STATIS PEMETAAN (Didefinisikan lokal agar tidak error import) ---
+// --- DATA STATIS PEMETAAN ---
 
 const provincialResults2024 = [
   { province: "Aceh", votes: 341855, seats: 3, status: "Kuat" },
@@ -155,42 +156,62 @@ interface IndonesiaMapProps {
   members?: Member[];
 }
 
-// Helper cerdas untuk menormalisasi semua variasi nama Dapil agar 100% cocok
-const normalizeDapil = (d: string) => {
-  if (!d) return '';
-  let s = d.toUpperCase().trim().replace(/\s+/g, ' ');
+// Helper cerdas yang SANGAT FLEKSIBEL untuk mencocokkan string Dapil
+const isDapilMatch = (masterDapil: string, memberDapil: string) => {
+  if (!masterDapil || !memberDapil) return false;
   
-  // Kamus Normalisasi (Singkatan -> Standar Internal)
-  const replacers: [string | RegExp, string][] = [
-      [/DAERAH ISTIMEWA YOGYAKARTA/g, 'DIY'],
-      [/DI YOGYAKARTA/g, 'DIY'],
-      [/NUSA TENGGARA BARAT/g, 'NTB'],
-      [/NUSA TENGGARA TIMUR/g, 'NTT'],
-      [/SUMATERA UTARA/g, 'SUMUT'],
-      [/SUMATERA BARAT/g, 'SUMBAR'],
-      [/SUMATERA SELATAN/g, 'SUMSEL'],
-      [/JAWA BARAT/g, 'JABAR'],
-      [/JAWA TENGAH/g, 'JATENG'],
-      [/JAWA TIMUR/g, 'JATIM'],
-      [/KALIMANTAN BARAT/g, 'KALBAR'],
-      [/KALIMANTAN SELATAN/g, 'KALSEL'],
-      [/KALIMANTAN TIMUR/g, 'KALTIM'],
-      [/KALIMANTAN TENGAH/g, 'KALTENG'],
-      [/KALIMANTAN UTARA/g, 'KALTARA'],
-      [/SULAWESI UTARA/g, 'SULUT'],
-      [/SULAWESI TENGAH/g, 'SULTENG'],
-      [/SULAWESI SELATAN/g, 'SULSEL'],
-      [/SULAWESI TENGGARA/g, 'SULTRA'],
-      [/SULAWESI BARAT/g, 'SULBAR'],
-      [/KEPULAUAN BANGKA BELITUNG/g, 'BABEL'],
-      [/BANGKA BELITUNG/g, 'BABEL'],
-      [/KEPULAUAN RIAU/g, 'KEPRI']
-  ];
-  
-  replacers.forEach(([from, to]) => {
-      s = s.replace(from, to as string);
+  // Bersihkan semua spasi, strip, titik, dan ubah ke huruf kecil
+  const cleanMaster = masterDapil.toLowerCase().replace(/[^a-z0-9]/g, '');
+  let cleanMember = memberDapil.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+  // Translasi khusus singkatan yang sering dipakai di KPU/JSON
+  const translations: Record<string, string> = {
+    'diyogyakarta': 'daerahistimewayogyakarta',
+    'diy': 'daerahistimewayogyakarta',
+    'ntb': 'nusatenggarabarat',
+    'ntt': 'nusatenggaratimur',
+    'sumut': 'sumaterautara',
+    'sumbar': 'sumaterabarat',
+    'sumsel': 'sumateraselatan',
+    'jabar': 'jawabarat',
+    'jateng': 'jawatengah',
+    'jatim': 'jawatimur',
+    'kalbar': 'kalimantanbarat',
+    'kalsel': 'kalimantanselatan',
+    'kaltim': 'kalimantantimur',
+    'kalteng': 'kalimantantengah',
+    'kaltara': 'kalimantanutara',
+    'sulut': 'sulawesiutara',
+    'sulteng': 'sulawesitengah',
+    'sulsel': 'sulawesiselatan',
+    'sultra': 'sulawesitenggara',
+    'sulbar': 'sulawesibarat',
+    'babel': 'kepulauanbangkabelitung',
+    'bangkabelitung': 'kepulauanbangkabelitung',
+    'kepri': 'kepulauanriau',
+    // Angka romawi vs angka biasa
+    '1': 'i', '2': 'ii', '3': 'iii', '4': 'iv', '5': 'v', '6': 'vi', '7': 'vii', '8': 'viii', '9': 'ix', '10': 'x', '11': 'xi'
+  };
+
+  // Coba terjemahkan singkatan di string member
+  Object.keys(translations).forEach(key => {
+    // Ganti singkatan kalau ada di awal kata
+    if (cleanMember.startsWith(key)) {
+      cleanMember = cleanMember.replace(key, translations[key]);
+    }
   });
-  return s;
+
+  // Ganti angka biasa jadi romawi kalau ada di ujung (misal "jawabarat1" jadi "jawabarat i")
+  Object.keys(translations).forEach(key => {
+    if(key.length <= 2 && !isNaN(Number(key))) {
+       if(cleanMember.endsWith(key)) {
+          cleanMember = cleanMember.slice(0, -key.length) + translations[key];
+       }
+    }
+  });
+
+  // Pencocokan final: Apakah nama bersih master persis sama dengan nama bersih member?
+  return cleanMaster === cleanMember;
 };
 
 const IndonesiaMap = ({ members = [] }: IndonesiaMapProps) => {
@@ -201,30 +222,17 @@ const IndonesiaMap = ({ members = [] }: IndonesiaMapProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [mapLevel, setMapLevel] = useState<'provinsi' | 'dapil'>('dapil');
 
-  // Mengelompokkan anggota berdasarkan Dapil (sudah dinormalisasi)
-  const membersByDapil = useMemo(() => {
-    const grouped: Record<string, Member[]> = {};
-    
-    if (members && members.length > 0) {
-      members.forEach((member) => {
-        if (!member || !member.dapil) return; 
-        
-        const dapilKey = normalizeDapil(member.dapil);
+  // Gunakan data dari props jika ada, atau fallback langsung ke import json jika tidak
+  const activeMembers = members && members.length > 0 ? members : (membersData as Member[]);
 
-        if (!grouped[dapilKey]) {
-          grouped[dapilKey] = [];
-        }
-        grouped[dapilKey].push(member);
-      });
-      
-      // Urutkan berdasarkan suara terbanyak per dapil
-      Object.keys(grouped).forEach(key => {
-          grouped[key].sort((a, b) => (Number(b.perolehan_suara) || 0) - (Number(a.perolehan_suara) || 0));
-      });
-    }
-    
-    return grouped;
-  }, [members]);
+  const provTotalSeats = useMemo(() => {
+    const totals: Record<string, number> = {};
+    dapilData.forEach((d: any) => {
+      if(!totals[d.province]) totals[d.province] = 0;
+      totals[d.province] += d.seats;
+    });
+    return totals;
+  }, []);
 
   useEffect(() => {
     // Inject Leaflet CSS
@@ -280,7 +288,7 @@ const IndonesiaMap = ({ members = [] }: IndonesiaMapProps) => {
       updateMarkers();
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mapLevel, isLoading, membersByDapil]);
+  }, [mapLevel, isLoading, activeMembers]);
 
   const updateMarkers = () => {
     const L = (window as any).L;
@@ -326,13 +334,18 @@ const IndonesiaMap = ({ members = [] }: IndonesiaMapProps) => {
         }
       });
     } else {
+      // Loop ke MASTER DATA DAPIL kita (84 Dapil)
       dapilData.forEach((dapil: any) => {
         if (dapil.coords) {
-          // Normalisasi nama dapil pada master koordinat juga
-          const dapilKey = normalizeDapil(dapil.dapil);
           
-          // Cari list member berdasarkan dapilKey yang sudah dinormalisasi
-          const membersList = membersByDapil[dapilKey] || [];
+          // FILTER MENGGUNAKAN FUZZY MATCHING KITA
+          // Cari semua member yang dapilnya cocok dengan master dapil ini
+          const membersList = activeMembers.filter((m: Member) => 
+             isDapilMatch(dapil.dapil, m.dapil)
+          );
+
+          // Urutkan suara terbanyak di dalam list
+          membersList.sort((a, b) => (Number(b.perolehan_suara) || 0) - (Number(a.perolehan_suara) || 0));
 
           const golkarSeats = membersList.length;
           const calegVotes = membersList.reduce((sum: number, m: Member) => sum + (Number(m.perolehan_suara) || 0), 0);
@@ -358,7 +371,7 @@ const IndonesiaMap = ({ members = [] }: IndonesiaMapProps) => {
           if (membersList.length > 0) {
             membersHTML = `
               <div style="margin-top: 12px; border-top: 1px dashed #cbd5e1; padding-top: 8px;">
-                <div style="font-size: 10px; font-weight: bold; color: #64748b; margin-bottom: 6px;">DATA ANGGOTA TERPILIH:</div>
+                <div style="font-size: 10px; font-weight: bold; color: #64748b; margin-bottom: 6px;">DATA ANGGOTA TERPILIH (${golkarSeats}):</div>
                 ${membersList.map((m: Member) => {
                   return `
                   <div style="margin-bottom: 6px; background: #f8fafc; padding: 6px; border-radius: 6px; border-left: 3px solid ${fillColor}; transition: background 0.2s;">
@@ -419,16 +432,16 @@ const IndonesiaMap = ({ members = [] }: IndonesiaMapProps) => {
           <h2 className="text-xl md:text-2xl font-bold text-slate-800 tracking-tight">Peta Geospasial Golkar</h2>
           <p className="text-sm text-slate-500">Pemetaan Daerah Pemilihan & Anggota Terpilih</p>
         </div>
-        <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200">
+        <div className="flex w-full sm:w-auto bg-slate-100 p-1 rounded-xl border border-slate-200">
           <button 
             onClick={() => setMapLevel('provinsi')}
-            className={`px-4 py-2 rounded-lg text-xs md:text-sm font-bold transition-all ${mapLevel === 'provinsi' ? 'bg-yellow-400 text-yellow-900 shadow' : 'text-slate-500 hover:text-slate-700'}`}
+            className={`flex-1 sm:flex-none px-2 sm:px-4 py-2 rounded-lg text-[11px] sm:text-xs md:text-sm font-bold transition-all whitespace-nowrap ${mapLevel === 'provinsi' ? 'bg-yellow-400 text-yellow-900 shadow' : 'text-slate-500 hover:text-slate-700'}`}
           >
             Tingkat Provinsi
           </button>
           <button 
             onClick={() => setMapLevel('dapil')}
-            className={`px-4 py-2 rounded-lg text-xs md:text-sm font-bold transition-all ${mapLevel === 'dapil' ? 'bg-green-700 text-white shadow' : 'text-slate-500 hover:text-slate-700'}`}
+            className={`flex-1 sm:flex-none px-2 sm:px-4 py-2 rounded-lg text-[11px] sm:text-xs md:text-sm font-bold transition-all whitespace-nowrap ${mapLevel === 'dapil' ? 'bg-green-700 text-white shadow' : 'text-slate-500 hover:text-slate-700'}`}
           >
             Tingkat Dapil
           </button>
