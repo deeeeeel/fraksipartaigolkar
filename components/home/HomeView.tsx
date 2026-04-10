@@ -30,8 +30,8 @@ const TICKER_NEWS = [
 
 const VIP_ROSTER = [
   { role: "Ketua Fraksi", name: "M. Sarmuji", dapil: "Jawa Timur VI", img: "/api/placeholder/400/400" },
-  { role: "Sekretaris Fraksi", name: "Mukhtarudin", dapil: "Kalimantan Barat I", img: "/api/placeholder/400/400" },
-  { role: "Bendahara Fraksi", name: "Sari Yuliati", dapil: "Nusa Tenggara Barat II", img: "/api/placeholder/400/400" }
+  { role: "Sekretaris Fraksi", name: "Sari Yuliati", dapil: "Nusa Tenggara Barat II", img: "/api/placeholder/400/400" },
+  { role: "Bendahara Fraksi", name: "Puteri Anneta Komaruddin", dapil: "Jawa Barat VII", img: "/api/placeholder/400/400" }
 ];
 
 const AGENDA_ITEMS = [

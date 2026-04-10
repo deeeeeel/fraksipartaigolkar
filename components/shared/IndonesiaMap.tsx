@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { Member } from '@/types/member';
-import membersData from '@/lib/members.json'; // Langsung import fallback data dari JSON-nya
+import membersData from '@/lib/members.json'; 
 
 // --- DATA STATIS PEMETAAN ---
 
@@ -195,13 +195,12 @@ const isDapilMatch = (masterDapil: string, memberDapil: string) => {
 
   // Coba terjemahkan singkatan di string member
   Object.keys(translations).forEach(key => {
-    // Ganti singkatan kalau ada di awal kata
     if (cleanMember.startsWith(key)) {
       cleanMember = cleanMember.replace(key, translations[key]);
     }
   });
 
-  // Ganti angka biasa jadi romawi kalau ada di ujung (misal "jawabarat1" jadi "jawabarat i")
+  // Ganti angka biasa jadi romawi kalau ada di ujung
   Object.keys(translations).forEach(key => {
     if(key.length <= 2 && !isNaN(Number(key))) {
        if(cleanMember.endsWith(key)) {
@@ -210,7 +209,6 @@ const isDapilMatch = (masterDapil: string, memberDapil: string) => {
     }
   });
 
-  // Pencocokan final: Apakah nama bersih master persis sama dengan nama bersih member?
   return cleanMaster === cleanMember;
 };
 
@@ -261,7 +259,6 @@ const IndonesiaMap = ({ members = [] }: IndonesiaMapProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [mapLevel, setMapLevel] = useState<'provinsi' | 'dapil'>('dapil');
 
-  // Gunakan data dari props jika ada, atau fallback langsung ke import json jika tidak
   const activeMembers = members && members.length > 0 ? members : (membersData as Member[]);
 
   const provTotalSeats = useMemo(() => {
@@ -274,7 +271,6 @@ const IndonesiaMap = ({ members = [] }: IndonesiaMapProps) => {
   }, []);
 
   useEffect(() => {
-    // Inject Leaflet CSS
     if (!document.getElementById('leaflet-css')) {
       const link = document.createElement('link');
       link.id = 'leaflet-css';
@@ -283,7 +279,6 @@ const IndonesiaMap = ({ members = [] }: IndonesiaMapProps) => {
       document.head.appendChild(link);
     }
 
-    // Inject Leaflet JS
     if (!document.getElementById('leaflet-js')) {
       const script = document.createElement('script');
       script.id = 'leaflet-js';
@@ -299,8 +294,18 @@ const IndonesiaMap = ({ members = [] }: IndonesiaMapProps) => {
       setIsLoading(false);
       if (!mapInstance.current && mapRef.current) {
         const L = (window as any).L;
+
+        // 1. Definisikan Batas Wilayah Indonesia (Bounding Box)
+        // Koordinat: [Lintang Utara/Barat], [Lintang Selatan/Timur]
+        const southWest = L.latLng(-11.0, 94.0); // Bawah Kiri (Sekitar Samudra Hindia/Rote)
+        const northEast = L.latLng(6.5, 141.0);  // Atas Kanan (Utara Aceh / Timur Papua)
+        const bounds = L.latLngBounds(southWest, northEast);
+
         const map = L.map(mapRef.current, {
-          zoomControl: false // Kita bisa custom letak zoom control kalau perlu, atau matiin biar clean
+          zoomControl: false, // Custom zoom controls below
+          maxBounds: bounds, // 2. Lock Peta di batas ini
+          maxBoundsViscosity: 1.0, // 3. Bikin mentok (enggak mantul keluar batas)
+          minZoom: 4.5, // 4. Cegah zoom out terlalu jauh
         }).setView([-2.5, 118], 5);
         mapInstance.current = map;
 
@@ -308,7 +313,8 @@ const IndonesiaMap = ({ members = [] }: IndonesiaMapProps) => {
         L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
           attribution: '&copy; OpenStreetMap contributors',
           subdomains: 'abcd',
-          maxZoom: 20
+          maxZoom: 20,
+          minZoom: 4.5 // Samakan dengan minZoom peta
         }).addTo(map);
 
         markerGroupRef.current = L.layerGroup().addTo(map);
@@ -379,29 +385,25 @@ const IndonesiaMap = ({ members = [] }: IndonesiaMapProps) => {
         }
       });
     } else {
-      // Loop ke MASTER DATA DAPIL kita (84 Dapil)
       dapilData.forEach((dapil: any) => {
         if (dapil.coords) {
-          
-          // FILTER MENGGUNAKAN FUZZY MATCHING KITA
           const membersList = activeMembers.filter((m: Member) => 
              isDapilMatch(dapil.dapil, m.dapil)
           );
 
-          // Urutkan suara terbanyak di dalam list
           membersList.sort((a, b) => (Number(b.perolehan_suara) || 0) - (Number(a.perolehan_suara) || 0));
 
           const golkarSeats = membersList.length;
           const calegVotes = membersList.reduce((sum: number, m: Member) => sum + (Number(m.perolehan_suara) || 0), 0);
           
-          let fillColor = "#ef4444"; // Merah (Kosong/0 Kursi)
+          let fillColor = "#ef4444"; 
           let statusLabel = "Tidak Ada Wakil";
 
           if (golkarSeats === 1) {
-              fillColor = "#15803d"; // Hijau (1 Kursi)
+              fillColor = "#15803d"; 
               statusLabel = "Pemenang (1 Kursi)";
           } else if (golkarSeats > 1) {
-              fillColor = "#14532d"; // Hijau Tua (>1 Kursi)
+              fillColor = "#14532d"; 
               statusLabel = `Basis Kuat (${golkarSeats} Kursi)`;
           }
           
@@ -481,19 +483,22 @@ const IndonesiaMap = ({ members = [] }: IndonesiaMapProps) => {
     }
   };
 
-  // Helper formatting angka juta
   const formatMillions = (num: number) => {
     if (num >= 1000000) return (num / 1000000).toFixed(1).replace('.', ',') + ' Jt';
     if (num >= 1000) return (num / 1000).toFixed(1).replace('.', ',') + ' Rb';
     return num.toLocaleString('id-ID');
   }
 
+  // Handle Custom Zoom
+  const handleZoomIn = () => mapInstance.current?.zoomIn();
+  const handleZoomOut = () => mapInstance.current?.zoomOut();
+
   return (
     <div id="peta-dapil-container" className="w-full h-full flex flex-col font-sans relative">
       <CustomPopupStyles />
       
-      {/* Header Info Terintegrasi di Luar Peta */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between mb-4 gap-4 px-2">
+      {/* Header Info */}
+      <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-6 gap-5 px-2">
         <div>
           <h2 className="text-2xl font-black text-slate-800 tracking-tight flex items-center gap-2">
             <svg className="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
@@ -504,28 +509,28 @@ const IndonesiaMap = ({ members = [] }: IndonesiaMapProps) => {
           </p>
         </div>
 
-        {/* Toggle Control dengan Desain Segmented Control yang lebih Sleek */}
-        <div className="flex w-full sm:w-auto bg-slate-100/80 backdrop-blur-sm p-1.5 rounded-xl border border-slate-200/60 shadow-inner">
+        {/* PILL TOGGLE CONTROL */}
+        <div className="flex w-full md:w-auto bg-slate-200/50 backdrop-blur-md p-1 rounded-full border border-slate-200/60 shadow-inner">
           <button 
             onClick={() => setMapLevel('provinsi')}
-            className={`flex-1 sm:flex-none px-4 py-2.5 rounded-lg text-xs md:text-sm font-bold transition-all duration-300 ease-out whitespace-nowrap ${mapLevel === 'provinsi' ? 'bg-white text-slate-800 shadow-[0_2px_8px_rgba(0,0,0,0.08)]' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'}`}
+            className={`flex-1 md:flex-none px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold transition-all duration-300 ease-out whitespace-nowrap ${mapLevel === 'provinsi' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'}`}
           >
             Tingkat Provinsi
           </button>
           <button 
             onClick={() => setMapLevel('dapil')}
-            className={`flex-1 sm:flex-none px-4 py-2.5 rounded-lg text-xs md:text-sm font-bold transition-all duration-300 ease-out whitespace-nowrap ${mapLevel === 'dapil' ? 'bg-white text-slate-800 shadow-[0_2px_8px_rgba(0,0,0,0.08)]' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'}`}
+            className={`flex-1 md:flex-none px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold transition-all duration-300 ease-out whitespace-nowrap ${mapLevel === 'dapil' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'}`}
           >
             Tingkat Dapil
           </button>
         </div>
       </div>
 
-      {/* Map Container Utama */}
-      <div className="relative w-full rounded-3xl border border-slate-200 overflow-hidden shadow-sm bg-slate-100 min-h-[450px] h-[60vh] z-0 group">
+      {/* Map Container */}
+      <div className="relative w-full rounded-[2rem] border border-slate-200/80 overflow-hidden shadow-lg bg-[#e6eef5] min-h-[450px] h-[60vh] z-0 group">
         
         {isLoading && (
-          <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-white/60 backdrop-blur-md">
+          <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-white/70 backdrop-blur-md">
             <div className="relative w-12 h-12 mb-4">
               <div className="absolute inset-0 border-4 border-yellow-200 rounded-full"></div>
               <div className="absolute inset-0 border-4 border-yellow-500 rounded-full border-t-transparent animate-spin"></div>
@@ -536,32 +541,56 @@ const IndonesiaMap = ({ members = [] }: IndonesiaMapProps) => {
 
         <div ref={mapRef} className="w-full h-full outline-none z-0"></div>
 
-        {/* Floating Legend Overlay (Modern Glassmorphism) */}
+        {/* CUSTOM ZOOM CONTROLS */}
         {!isLoading && (
-          <div className="absolute bottom-4 left-4 z-[400] bg-white/90 backdrop-blur-md p-3.5 rounded-2xl shadow-xl border border-white/50 flex flex-col gap-2.5 transition-all w-fit pointer-events-none">
-            <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.15em] ml-1">Legenda Peta</span>
+          <div className="absolute bottom-6 right-6 z-[400] flex flex-col gap-2">
+            <button 
+              onClick={handleZoomIn} 
+              className="w-10 h-10 bg-white/90 backdrop-blur shadow-md rounded-xl hover:bg-slate-50 flex items-center justify-center text-slate-700 font-bold text-xl pb-1 leading-none border border-slate-200/50 transition-all active:scale-95"
+              aria-label="Zoom In"
+            >
+              +
+            </button>
+            <button 
+              onClick={handleZoomOut} 
+              className="w-10 h-10 bg-white/90 backdrop-blur shadow-md rounded-xl hover:bg-slate-50 flex items-center justify-center text-slate-700 font-bold text-2xl pb-1 leading-none border border-slate-200/50 transition-all active:scale-95"
+              aria-label="Zoom Out"
+            >
+              -
+            </button>
+          </div>
+        )}
+
+        {/* PREMIUM FLOATING LEGEND */}
+        {!isLoading && (
+          <div className="absolute bottom-6 left-6 z-[400] bg-white/95 backdrop-blur-md p-4 rounded-2xl shadow-xl border border-white flex flex-col gap-3 transition-all min-w-[160px] pointer-events-none">
+            <div className="flex items-center gap-2 mb-1">
+              <svg className="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" /></svg>
+              <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Legenda Peta</span>
+            </div>
+            
             {mapLevel === 'provinsi' ? (
-              <div className="flex flex-col gap-2">
-                <div className="flex items-center gap-2.5"><div className="w-3.5 h-3.5 rounded-full bg-[#ca8a04] shadow-inner border border-white/40"></div> <span className="text-xs font-bold text-slate-700">Pemenang Kuat</span></div>
-                <div className="flex items-center gap-2.5"><div className="w-3.5 h-3.5 rounded-full bg-[#eab308] shadow-inner border border-white/40"></div> <span className="text-xs font-bold text-slate-700">Stabil / Naik</span></div>
-                <div className="flex items-center gap-2.5"><div className="w-3.5 h-3.5 rounded-full bg-[#ef4444] shadow-inner border border-white/40"></div> <span className="text-xs font-bold text-slate-700">Penurunan</span></div>
+              <div className="flex flex-col gap-2.5">
+                <div className="flex items-center gap-3"><div className="w-4 h-4 rounded-full bg-[#ca8a04] shadow-inner border border-white/60"></div> <span className="text-[13px] font-bold text-slate-700">Pemenang Kuat</span></div>
+                <div className="flex items-center gap-3"><div className="w-4 h-4 rounded-full bg-[#eab308] shadow-inner border border-white/60"></div> <span className="text-[13px] font-bold text-slate-700">Stabil / Naik</span></div>
+                <div className="flex items-center gap-3"><div className="w-4 h-4 rounded-full bg-[#ef4444] shadow-inner border border-white/60"></div> <span className="text-[13px] font-bold text-slate-700">Penurunan</span></div>
               </div>
             ) : (
-              <div className="flex flex-col gap-2">
-                <div className="flex items-center gap-2.5"><div className="w-3.5 h-3.5 rounded-full bg-[#14532d] shadow-inner border border-white/40"></div> <span className="text-xs font-bold text-slate-700">Basis Kuat (&gt;1 Kursi)</span></div>
-                <div className="flex items-center gap-2.5"><div className="w-3.5 h-3.5 rounded-full bg-[#15803d] shadow-inner border border-white/40"></div> <span className="text-xs font-bold text-slate-700">1 Kursi</span></div>
-                <div className="flex items-center gap-2.5"><div className="w-3.5 h-3.5 rounded-full bg-[#ef4444] shadow-inner border border-white/40"></div> <span className="text-xs font-bold text-slate-700">0 Kursi (Kosong)</span></div>
+              <div className="flex flex-col gap-2.5">
+                <div className="flex items-center gap-3"><div className="w-4 h-4 rounded-full bg-[#14532d] shadow-inner border border-white/60"></div> <span className="text-[13px] font-bold text-slate-700">Basis Kuat (&gt;1 Kursi)</span></div>
+                <div className="flex items-center gap-3"><div className="w-4 h-4 rounded-full bg-[#15803d] shadow-inner border border-white/60"></div> <span className="text-[13px] font-bold text-slate-700">1 Kursi</span></div>
+                <div className="flex items-center gap-3"><div className="w-4 h-4 rounded-full bg-[#ef4444] shadow-inner border border-white/60"></div> <span className="text-[13px] font-bold text-slate-700">0 Kursi (Kosong)</span></div>
               </div>
             )}
           </div>
         )}
         
-        {/* Floating Instruction Hint */}
+        {/* SUBTLE FLOATING HINT */}
         {!isLoading && (
-          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[400] bg-slate-900/80 backdrop-blur-md px-4 py-2 rounded-full shadow-lg border border-white/10 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-            <p className="text-[10px] text-white font-medium flex items-center gap-2">
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" /></svg>
-              Arahkan kursor atau klik titik untuk melihat detail
+          <div className="absolute top-5 left-1/2 -translate-x-1/2 z-[400] bg-slate-900/80 backdrop-blur-md px-5 py-2.5 rounded-full shadow-lg border border-white/10 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700">
+            <p className="text-[11px] text-white font-semibold flex items-center gap-2.5 tracking-wide">
+              <svg className="w-3.5 h-3.5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" /></svg>
+              Arahkan kursor ke titik peta untuk info detail
             </p>
           </div>
         )}
