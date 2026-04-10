@@ -214,6 +214,45 @@ const isDapilMatch = (masterDapil: string, memberDapil: string) => {
   return cleanMaster === cleanMember;
 };
 
+// CSS Kustom untuk Scrollbar di dalam Popup Leaflet
+const CustomPopupStyles = () => (
+  <style dangerouslySetContent={{
+    __html: `
+      .custom-popup-scrollbar::-webkit-scrollbar {
+        width: 6px;
+      }
+      .custom-popup-scrollbar::-webkit-scrollbar-track {
+        background: transparent; 
+      }
+      .custom-popup-scrollbar::-webkit-scrollbar-thumb {
+        background-color: #cbd5e1; 
+        border-radius: 10px;
+      }
+      .custom-popup-scrollbar::-webkit-scrollbar-thumb:hover {
+        background-color: #94a3b8; 
+      }
+      .leaflet-popup-content-wrapper {
+        border-radius: 16px !important;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+        padding: 0 !important;
+        overflow: hidden;
+      }
+      .leaflet-popup-content {
+        margin: 16px !important;
+        line-height: 1.5;
+      }
+      .leaflet-popup-close-button {
+        color: #94a3b8 !important;
+        padding: 8px 8px 0 0 !important;
+      }
+      .leaflet-popup-close-button:hover {
+        color: #0f172a !important;
+        background: transparent !important;
+      }
+    `
+  }} />
+);
+
 const IndonesiaMap = ({ members = [] }: IndonesiaMapProps) => {
   const mapRef = useRef<HTMLDivElement | null>(null);
   const mapInstance = useRef<any>(null);
@@ -260,9 +299,12 @@ const IndonesiaMap = ({ members = [] }: IndonesiaMapProps) => {
       setIsLoading(false);
       if (!mapInstance.current && mapRef.current) {
         const L = (window as any).L;
-        const map = L.map(mapRef.current).setView([-2.5, 118], 5);
+        const map = L.map(mapRef.current, {
+          zoomControl: false // Kita bisa custom letak zoom control kalau perlu, atau matiin biar clean
+        }).setView([-2.5, 118], 5);
         mapInstance.current = map;
 
+        // Basemap modern dan bersih
         L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
           attribution: '&copy; OpenStreetMap contributors',
           subdomains: 'abcd',
@@ -312,20 +354,23 @@ const IndonesiaMap = ({ members = [] }: IndonesiaMapProps) => {
           }).addTo(markerGroupRef.current);
 
           circle.bindPopup(`
-            <div style="font-family: ui-sans-serif, system-ui, sans-serif; min-width: 200px;">
-              <h3 style="margin: 0 0 5px 0; font-size: 16px; font-weight: bold; color: #334155; border-bottom: 2px solid #fde047; padding-bottom: 5px;">
+            <div style="font-family: inherit; min-width: 220px; padding: 2px;">
+              <h3 style="margin: 0 0 10px 0; font-size: 16px; font-weight: 800; color: #0f172a; border-bottom: 2px solid ${fillColor}; padding-bottom: 8px;">
                 ${prov.province}
               </h3>
-              <div style="display: flex; justify-content: space-between; margin-top: 8px;">
-                <span style="color: #64748b; font-size: 12px;">Suara Sah:</span>
-                <span style="font-weight: bold; color: #1e293b; font-size: 13px;">${prov.votes.toLocaleString('id-ID')}</span>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+                <span style="color: #64748b; font-size: 12px; font-weight: 600;">Suara Sah:</span>
+                <span style="font-weight: 800; color: #1e293b; font-size: 13px;">${prov.votes.toLocaleString('id-ID')}</span>
               </div>
-              <div style="display: flex; justify-content: space-between; margin-top: 4px;">
-                <span style="color: #64748b; font-size: 12px;">Kursi DPR RI:</span>
-                <span style="font-weight: bold; background: #fef08a; color: #854d0e; padding: 2px 8px; border-radius: 12px; font-size: 12px;">${prov.seats}</span>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px;">
+                <span style="color: #64748b; font-size: 12px; font-weight: 600;">Kursi DPR RI:</span>
+                <span style="font-weight: 800; background: #f8fafc; border: 1px solid #e2e8f0; color: #334155; padding: 2px 10px; border-radius: 12px; font-size: 12px;">${prov.seats}</span>
               </div>
-              <div style="margin-top: 10px; font-size: 11px; text-transform: uppercase; font-weight: bold; color: ${fillColor};">
-                STATUS: ${prov.status}
+              <div style="margin-top: 12px; padding-top: 8px; border-top: 1px dashed #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
+                <span style="font-size: 11px; font-weight: 600; color: #94a3b8;">STATUS</span>
+                <span style="font-size: 11px; text-transform: uppercase; font-weight: 800; color: ${fillColor}; background: ${fillColor}15; padding: 4px 8px; border-radius: 6px;">
+                  ${prov.status}
+                </span>
               </div>
             </div>
           `);
@@ -339,7 +384,6 @@ const IndonesiaMap = ({ members = [] }: IndonesiaMapProps) => {
         if (dapil.coords) {
           
           // FILTER MENGGUNAKAN FUZZY MATCHING KITA
-          // Cari semua member yang dapilnya cocok dengan master dapil ini
           const membersList = activeMembers.filter((m: Member) => 
              isDapilMatch(dapil.dapil, m.dapil)
           );
@@ -351,70 +395,82 @@ const IndonesiaMap = ({ members = [] }: IndonesiaMapProps) => {
           const calegVotes = membersList.reduce((sum: number, m: Member) => sum + (Number(m.perolehan_suara) || 0), 0);
           
           let fillColor = "#ef4444"; // Merah (Kosong/0 Kursi)
-          let statusLabel = "Kosong (Tidak Ada Wakil)";
+          let statusLabel = "Tidak Ada Wakil";
 
           if (golkarSeats === 1) {
-              fillColor = "#15803d"; // Hijau (1 Kursi)
+              fillColor = "#eab308"; // Kuning/Gold (1 Kursi) - Lebi blend dengan warna Golkar
               statusLabel = "Pemenang (1 Kursi)";
           } else if (golkarSeats > 1) {
-              fillColor = "#14532d"; // Hijau Tua (>1 Kursi)
+              fillColor = "#ca8a04"; // Kuning Tua/Emas (>1 Kursi)
               statusLabel = `Basis Kuat (${golkarSeats} Kursi)`;
           }
           
-          const radiusSize = golkarSeats > 0 ? Math.max(8, Math.min(20, calegVotes / 30000)) : 6;
+          const radiusSize = golkarSeats > 0 ? Math.max(8, Math.min(22, calegVotes / 30000)) : 6;
 
           const circle = L.circleMarker(dapil.coords, {
-            color: '#ffffff', weight: 1.5, fillColor: fillColor, fillOpacity: 0.85, radius: radiusSize
+            color: '#ffffff', weight: 2, fillColor: fillColor, fillOpacity: 0.85, radius: radiusSize
           }).addTo(markerGroupRef.current);
 
           let membersHTML = '';
           if (membersList.length > 0) {
             membersHTML = `
-              <div style="margin-top: 12px; border-top: 1px dashed #cbd5e1; padding-top: 8px;">
-                <div style="font-size: 10px; font-weight: bold; color: #64748b; margin-bottom: 6px;">DATA ANGGOTA TERPILIH (${golkarSeats}):</div>
-                ${membersList.map((m: Member) => {
-                  return `
-                  <div style="margin-bottom: 6px; background: #f8fafc; padding: 6px; border-radius: 6px; border-left: 3px solid ${fillColor}; transition: background 0.2s;">
-                    <div style="font-weight: bold; color: #0f172a; font-size: 13px; margin-bottom: 2px;">${m.name}</div>
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                          <span style="display: inline-block; background: #e2e8f0; color: #475569; font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: bold;">${m.komisi || '-'}</span>
-                          <span style="color: ${fillColor}; font-size: 11px; font-weight: 700; margin-left: 4px;">${(Number(m.perolehan_suara) || 0).toLocaleString('id-ID')} Suara</span>
-                        </div>
-                        <a href="/anggota/${m.slug}" style="text-decoration: none; background: ${fillColor}; color: white; padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; display: inline-flex; align-items: center; gap: 4px;">
-                          Profil ↗
-                        </a>
+              <div style="margin-top: 14px;">
+                <div style="font-size: 10px; font-weight: 800; color: #94a3b8; margin-bottom: 8px; letter-spacing: 0.05em; text-transform: uppercase;">
+                  Anggota Terpilih (${golkarSeats})
+                </div>
+                <div class="custom-popup-scrollbar" style="max-height: 180px; overflow-y: auto; padding-right: 4px; display: flex; flex-direction: column; gap: 8px;">
+                  ${membersList.map((m: Member) => {
+                    return `
+                    <div style="background: #f8fafc; border: 1px solid #f1f5f9; padding: 10px; border-radius: 10px; border-left: 4px solid ${fillColor};">
+                      <div style="font-weight: 800; color: #0f172a; font-size: 13px; margin-bottom: 4px; line-height: 1.3;">${m.name}</div>
+                      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                          <span style="display: inline-block; background: #e2e8f0; color: #475569; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 700;">${m.komisi || 'Fraksi Golkar'}</span>
+                          <span style="color: ${fillColor}; font-size: 11px; font-weight: 800;">${(Number(m.perolehan_suara) || 0).toLocaleString('id-ID')} Suara</span>
+                      </div>
+                      <a href="/anggota/${m.slug}" target="_blank" style="text-decoration: none; background: #ffffff; color: #0f172a; border: 1px solid #e2e8f0; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: all 0.2s;">
+                        Lihat Profil 
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                      </a>
                     </div>
-                  </div>
-                `}).join('')}
+                  `}).join('')}
+                </div>
               </div>
             `;
           } else {
-             membersHTML = `<div style="margin-top: 10px; font-size: 11px; color: #b91c1c; font-style: italic; background: #fef2f2; padding: 6px; border-radius: 4px; border-left: 2px solid #ef4444;">(Tidak ada perwakilan Partai Golkar yang lolos dari Dapil ini)</div>`;
+             membersHTML = `
+              <div style="margin-top: 12px; font-size: 12px; color: #b91c1c; background: #fef2f2; padding: 10px; border-radius: 8px; border: 1px solid #fecaca; font-weight: 500; display: flex; align-items: center; gap: 8px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                Belum ada perwakilan Golkar yang lolos dari Dapil ini.
+              </div>`;
           }
 
           circle.bindPopup(`
-            <div style="font-family: ui-sans-serif, system-ui, sans-serif; min-width: 250px; max-height: 320px; overflow-y: auto;">
-              <h3 style="margin: 0 0 5px 0; font-size: 15px; font-weight: bold; color: ${fillColor === '#ef4444' ? '#b91c1c' : '#14532d'}; border-bottom: 2px solid ${fillColor === '#ef4444' ? '#fecaca' : '#bbf7d0'}; padding-bottom: 5px;">
-                ${dapil.dapil}
-              </h3>
-              <p style="margin: 0 0 10px 0; font-size: 11px; color: #64748b; text-transform: uppercase;">
-                ${dapil.province}
-              </p>
-              <div style="display: flex; justify-content: space-between; margin-top: 4px;">
-                <span style="color: #64748b; font-size: 12px;">Total Kursi Dapil:</span>
-                <span style="font-weight: bold; background: #f1f5f9; color: #475569; padding: 2px 8px; border-radius: 12px; font-size: 12px;">${dapil.seats} Kursi</span>
+            <div style="font-family: inherit; min-width: 260px; padding: 2px;">
+              <div style="display: flex; align-items: center; gap: 8px; border-bottom: 2px solid ${fillColor === '#ef4444' ? '#fecaca' : '#fef08a'}; padding-bottom: 10px; margin-bottom: 12px;">
+                <div style="width: 12px; height: 12px; border-radius: 50%; background: ${fillColor}; flex-shrink: 0;"></div>
+                <div>
+                  <h3 style="margin: 0; font-size: 16px; font-weight: 800; color: #0f172a; line-height: 1.2;">${dapil.dapil}</h3>
+                  <p style="margin: 2px 0 0 0; font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">${dapil.province}</p>
+                </div>
               </div>
-              <div style="display: flex; justify-content: space-between; margin-top: 8px;">
-                <span style="color: #64748b; font-size: 12px;">Status Golkar:</span>
-                <span style="font-weight: bold; color: ${fillColor}; font-size: 12px;">${statusLabel}</span>
+              
+              <div style="display: flex; gap: 8px; margin-bottom: 4px;">
+                <div style="flex: 1; background: #f8fafc; padding: 8px; border-radius: 8px; border: 1px solid #f1f5f9;">
+                  <div style="font-size: 10px; color: #64748b; font-weight: 600; margin-bottom: 2px;">Total Kursi</div>
+                  <div style="font-size: 14px; font-weight: 800; color: #1e293b;">${dapil.seats}</div>
+                </div>
+                ${golkarSeats > 0 ? `
+                <div style="flex: 1; background: ${fillColor}10; padding: 8px; border-radius: 8px; border: 1px solid ${fillColor}30;">
+                  <div style="font-size: 10px; color: ${fillColor}; font-weight: 700; margin-bottom: 2px;">Suara Partai</div>
+                  <div style="font-size: 14px; font-weight: 800; color: ${fillColor};">${formatMillions(calegVotes)}</div>
+                </div>
+                ` : `
+                <div style="flex: 1; background: #fef2f2; padding: 8px; border-radius: 8px; border: 1px solid #fecaca;">
+                  <div style="font-size: 10px; color: #ef4444; font-weight: 700; margin-bottom: 2px;">Status</div>
+                  <div style="font-size: 13px; font-weight: 800; color: #ef4444;">Kosong</div>
+                </div>
+                `}
               </div>
-              ${golkarSeats > 0 ? `
-              <div style="display: flex; justify-content: space-between; margin-top: 4px;">
-                <span style="color: #64748b; font-size: 12px;">Total Suara Caleg:</span>
-                <span style="font-weight: bold; color: #0f172a; font-size: 13px;">${calegVotes.toLocaleString('id-ID')}</span>
-              </div>
-              ` : ''}
               ${membersHTML}
             </div>
           `);
@@ -425,58 +481,91 @@ const IndonesiaMap = ({ members = [] }: IndonesiaMapProps) => {
     }
   };
 
+  // Helper formatting angka juta
+  const formatMillions = (num: number) => {
+    if (num >= 1000000) return (num / 1000000).toFixed(1).replace('.', ',') + ' Jt';
+    if (num >= 1000) return (num / 1000).toFixed(1).replace('.', ',') + ' Rb';
+    return num.toLocaleString('id-ID');
+  }
+
   return (
-    <div id="peta-dapil-container" className="w-full h-full flex flex-col font-sans">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-4">
+    <div id="peta-dapil-container" className="w-full h-full flex flex-col font-sans relative">
+      <CustomPopupStyles />
+      
+      {/* Header Info Terintegrasi di Luar Peta */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between mb-4 gap-4 px-2">
         <div>
-          <h2 className="text-xl md:text-2xl font-bold text-slate-800 tracking-tight">Peta Geospasial Golkar</h2>
-          <p className="text-sm text-slate-500">Pemetaan Daerah Pemilihan & Anggota Terpilih</p>
+          <h2 className="text-2xl font-black text-slate-800 tracking-tight flex items-center gap-2">
+            <svg className="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            Peta Geospasial
+          </h2>
+          <p className="text-sm font-medium text-slate-500 mt-1">
+            Visualisasi interaktif sebaran kursi & kekuatan elektorat
+          </p>
         </div>
-        <div className="flex w-full sm:w-auto bg-slate-100 p-1 rounded-xl border border-slate-200">
+
+        {/* Toggle Control dengan Desain Segmented Control yang lebih Sleek */}
+        <div className="flex w-full sm:w-auto bg-slate-100/80 backdrop-blur-sm p-1.5 rounded-xl border border-slate-200/60 shadow-inner">
           <button 
             onClick={() => setMapLevel('provinsi')}
-            className={`flex-1 sm:flex-none px-2 sm:px-4 py-2 rounded-lg text-[11px] sm:text-xs md:text-sm font-bold transition-all whitespace-nowrap ${mapLevel === 'provinsi' ? 'bg-yellow-400 text-yellow-900 shadow' : 'text-slate-500 hover:text-slate-700'}`}
+            className={`flex-1 sm:flex-none px-4 py-2.5 rounded-lg text-xs md:text-sm font-bold transition-all duration-300 ease-out whitespace-nowrap ${mapLevel === 'provinsi' ? 'bg-white text-slate-800 shadow-[0_2px_8px_rgba(0,0,0,0.08)]' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'}`}
           >
             Tingkat Provinsi
           </button>
           <button 
             onClick={() => setMapLevel('dapil')}
-            className={`flex-1 sm:flex-none px-2 sm:px-4 py-2 rounded-lg text-[11px] sm:text-xs md:text-sm font-bold transition-all whitespace-nowrap ${mapLevel === 'dapil' ? 'bg-green-700 text-white shadow' : 'text-slate-500 hover:text-slate-700'}`}
+            className={`flex-1 sm:flex-none px-4 py-2.5 rounded-lg text-xs md:text-sm font-bold transition-all duration-300 ease-out whitespace-nowrap ${mapLevel === 'dapil' ? 'bg-white text-slate-800 shadow-[0_2px_8px_rgba(0,0,0,0.08)]' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'}`}
           >
             Tingkat Dapil
           </button>
         </div>
       </div>
 
-      {/* Legend */}
-      <div className="mb-4 flex flex-wrap gap-4 text-xs font-bold text-slate-600 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
-        <span className="text-slate-400 uppercase tracking-wider mr-2">Legenda Peta:</span>
-        {mapLevel === 'provinsi' ? (
-          <>
-            <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-[#ca8a04]"></div> Pemenang (Prov)</div>
-            <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-[#eab308]"></div> Stabil/Naik</div>
-            <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-[#ef4444]"></div> Penurunan</div>
-          </>
-        ) : (
-          <>
-            <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-[#14532d]"></div> Basis Kuat (&gt;1 Kursi)</div>
-            <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-[#15803d]"></div> Pemenang (1 Kursi)</div>
-            <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-[#ef4444]"></div> Kosong (0 Kursi)</div>
-          </>
-        )}
-      </div>
-
-      {/* Map Container */}
-      <div className="relative w-full rounded-2xl border border-slate-200 overflow-hidden shadow-sm bg-slate-200 min-h-[400px] h-[50vh] md:h-[60vh] z-0">
+      {/* Map Container Utama */}
+      <div className="relative w-full rounded-3xl border border-slate-200 overflow-hidden shadow-sm bg-slate-100 min-h-[450px] h-[60vh] z-0 group">
+        
         {isLoading && (
-          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-slate-50/80 backdrop-blur-sm">
-            <div className="w-10 h-10 border-4 border-green-200 border-t-green-600 rounded-full animate-spin mb-3"></div>
-            <p className="text-sm text-slate-600 font-bold animate-pulse">Memuat Peta...</p>
+          <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-white/60 backdrop-blur-md">
+            <div className="relative w-12 h-12 mb-4">
+              <div className="absolute inset-0 border-4 border-yellow-200 rounded-full"></div>
+              <div className="absolute inset-0 border-4 border-yellow-500 rounded-full border-t-transparent animate-spin"></div>
+            </div>
+            <p className="text-sm text-slate-700 font-bold tracking-wide animate-pulse">Menyiapkan Peta...</p>
           </div>
         )}
-        <div ref={mapRef} className="w-full h-full outline-none"></div>
+
+        <div ref={mapRef} className="w-full h-full outline-none z-0"></div>
+
+        {/* Floating Legend Overlay (Modern Glassmorphism) */}
+        {!isLoading && (
+          <div className="absolute bottom-4 left-4 z-[400] bg-white/90 backdrop-blur-md p-3.5 rounded-2xl shadow-xl border border-white/50 flex flex-col gap-2.5 transition-all w-fit pointer-events-none">
+            <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.15em] ml-1">Legenda Peta</span>
+            {mapLevel === 'provinsi' ? (
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center gap-2.5"><div className="w-3.5 h-3.5 rounded-full bg-[#ca8a04] shadow-inner border border-white/40"></div> <span className="text-xs font-bold text-slate-700">Pemenang Kuat</span></div>
+                <div className="flex items-center gap-2.5"><div className="w-3.5 h-3.5 rounded-full bg-[#eab308] shadow-inner border border-white/40"></div> <span className="text-xs font-bold text-slate-700">Stabil / Naik</span></div>
+                <div className="flex items-center gap-2.5"><div className="w-3.5 h-3.5 rounded-full bg-[#ef4444] shadow-inner border border-white/40"></div> <span className="text-xs font-bold text-slate-700">Penurunan</span></div>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center gap-2.5"><div className="w-3.5 h-3.5 rounded-full bg-[#ca8a04] shadow-inner border border-white/40"></div> <span className="text-xs font-bold text-slate-700">Basis Kuat (&gt;1 Kursi)</span></div>
+                <div className="flex items-center gap-2.5"><div className="w-3.5 h-3.5 rounded-full bg-[#eab308] shadow-inner border border-white/40"></div> <span className="text-xs font-bold text-slate-700">1 Kursi</span></div>
+                <div className="flex items-center gap-2.5"><div className="w-3.5 h-3.5 rounded-full bg-[#ef4444] shadow-inner border border-white/40"></div> <span className="text-xs font-bold text-slate-700">0 Kursi (Kosong)</span></div>
+              </div>
+            )}
+          </div>
+        )}
+        
+        {/* Floating Instruction Hint */}
+        {!isLoading && (
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[400] bg-slate-900/80 backdrop-blur-md px-4 py-2 rounded-full shadow-lg border border-white/10 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+            <p className="text-[10px] text-white font-medium flex items-center gap-2">
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" /></svg>
+              Arahkan kursor atau klik titik untuk melihat detail
+            </p>
+          </div>
+        )}
       </div>
-      <p className="text-xs text-slate-400 mt-2">*Arahkan kursor ke lingkaran pada peta untuk melihat detail perwakilan.</p>
     </div>
   );
 };
