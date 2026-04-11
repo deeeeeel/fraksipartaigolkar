@@ -1,17 +1,18 @@
-import { Member } from '@/types/member';
-import membersData from './members.json';
+export const KOMISI_LIST = ['Komisi I', 'Komisi II', 'Komisi III', 'Komisi IV', 'Komisi V', 'Komisi VI', 'Komisi VII', 'Komisi VIII', 'Komisi IX', 'Komisi X', 'Komisi XI', 'Komisi XII', 'Komisi XIII'];
 
-export const KOMISI_LIST = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII', 'XIII'];
+export const MOCK_MEMBERS = [
+  { id: 1, name: "T. Zulkarnaini Ampon Bang", dapil: "ACEH I", komisi: "Komisi VII", perolehan_suara: 82000, slug: "zulkarnaini", image: "[https://www.dpr.go.id/setjen/view-foto-anggota/2024/1.jpg](https://www.dpr.go.id/setjen/view-foto-anggota/2024/1.jpg)" },
+  { id: 2, name: "Ilham Pangestu", dapil: "ACEH II", komisi: "Komisi IV", perolehan_suara: 110000, slug: "ilham-pangestu", image: "[https://www.dpr.go.id/setjen/view-foto-anggota/2024/2.jpg](https://www.dpr.go.id/setjen/view-foto-anggota/2024/2.jpg)" },
+  { id: 3, name: "Samsul Bahri Tiyong", dapil: "ACEH II", komisi: "Komisi XIII", perolehan_suara: 95000, slug: "samsul-bahri", image: "[https://www.dpr.go.id/setjen/view-foto-anggota/2024/3.jpg](https://www.dpr.go.id/setjen/view-foto-anggota/2024/3.jpg)" },
+  { id: 4, name: "Musa Rajekshah", dapil: "SUMATERA UTARA I", komisi: "Komisi V", perolehan_suara: 190000, slug: "musa-rajekshah", image: "[https://www.dpr.go.id/setjen/view-foto-anggota/2024/4.jpg](https://www.dpr.go.id/setjen/view-foto-anggota/2024/4.jpg)" },
+  { id: 5, name: "Maruli Siahaan", dapil: "SUMATERA UTARA I", komisi: "Komisi XIII", perolehan_suara: 75000, slug: "maruli-siahaan", image: "[https://www.dpr.go.id/setjen/view-foto-anggota/2024/5.jpg](https://www.dpr.go.id/setjen/view-foto-anggota/2024/5.jpg)" },
+  { id: 6, name: "Lamhot Sinaga", dapil: "SUMATERA UTARA II", komisi: "Komisi VII", perolehan_suara: 158973, slug: "lamhot-sinaga", image: "[https://www.dpr.go.id/setjen/view-foto-anggota/2024/6.jpg](https://www.dpr.go.id/setjen/view-foto-anggota/2024/6.jpg)" }
+];
 
-export const MOCK_MEMBERS: Member[] = membersData as Member[];
-
-export async function getMembers(): Promise<Member[]> {
+// Fungsi getMembers untuk di-import oleh app/page.tsx
+export const getMembers = async () => {
   return MOCK_MEMBERS;
-}
-
-export async function getMemberBySlug(slug: string): Promise<Member | undefined> {
-  return MOCK_MEMBERS.find(m => m.slug === slug);
-}
+};
 
 export const MOCK_NEWS = [
   { id: 1, title: "Di Balik Stabilitas Indonesia, Ada Airlangga Hartarto dan Bahlil Lahadalia yang Bertarung di Tengah Krisis Global", date: "10 April 2026", tag: "Ekonomi Politik", url: "[https://golkarpedia.com/di-balik-stabilitas-indonesia-ada-airlangga-hartarto-dan-bahlil-lahadalia-yang-bertarung-di-tengah-krisis-global/](https://golkarpedia.com/di-balik-stabilitas-indonesia-ada-airlangga-hartarto-dan-bahlil-lahadalia-yang-bertarung-di-tengah-krisis-global/)", image: "/1-14.jpg" },
@@ -34,7 +35,7 @@ export const TICKER_NEWS = [
 export const VIP_ROSTER = [
   { role: "Ketua Fraksi", name: "M. Sarmuji", dapil: "Jawa Timur VI", img: "/0303-sekjen-golkar-sarmuji.jpg" },
   { role: "Sekretaris Fraksi", name: "Sari Yuliati", dapil: "Nusa Tenggara Barat II", img: "/7540d57a36f-9269-4c2f-aeb5-1761ba6e2bc2 (1).jpeg" },
-  { role: "Bendahara Fraksi", name: "Puteri Anneta Komaruddin", dapil: "Jawa Barat VII", img: "/api/placeholder/400/400" }
+  { role: "Bendahara Fraksi", name: "Puteri Anneta Komaruddin", dapil: "Jawa Barat VII", img: "[https://ui-avatars.com/api/?name=Puteri+Anneta+Komaruddin&background=0f172a&color=facc15&size=400](https://ui-avatars.com/api/?name=Puteri+Anneta+Komaruddin&background=0f172a&color=facc15&size=400)" }
 ];
 
 export const AGENDA_ITEMS = [
@@ -52,16 +53,17 @@ export const SENTIMENT_DATA = {
   totalMentions: "142.5K"
 };
 
+// Data jajaran Menteri lengkap dengan foto asli Wikipedia dan link Sosmed
 export const KABINET_ROSTER = [
-  { role: "Menko Perekonomian", name: "Airlangga Hartarto", type: "Menteri", img: "/0603-airlangga-hartarto-menko.jpeg" },
-  { role: "Menteri ESDM", name: "Bahlil Lahadalia", type: "Menteri", img: "/1203-bahlil-lahadalia-esdm.jpg" },
-  { role: "Menteri Perindustrian", name: "Agus Gumiwang Kartasasmita", type: "Menteri", img: "/0203-agus-gumiwang-kartasasmita.jpg" },
-  { role: "Menteri Komunikasi dan Digital", name: "Meutya Hafid", type: "Menteri", img: "/api/placeholder/200/200" },
-  { role: "Menteri Kependudukan", name: "Wihaji", type: "Menteri", img: "/api/placeholder/200/200" },
-  { role: "Menteri ATR/BPN", name: "Nusron Wahid", type: "Menteri", img: "/api/placeholder/200/200" },
-  { role: "Menteri UMKM", name: "Maman Abdurahman", type: "Menteri", img: "/api/placeholder/200/200" },
-  { role: "Menteri PPMI", name: "Mukhtarudin", type: "Menteri", img: "/api/placeholder/200/200" },
-  { role: "Gubernur Lemhannas", name: "Ace Hasan Syadzily", type: "Setingkat Menteri", img: "/1-3.jpeg" },
-  { role: "Wamen PPMI", name: "Christina Aryani", type: "Wakil Menteri", img: "/api/placeholder/200/200" },
-  { role: "Wamen Perdagangan", name: "Dyah Roro Esty", type: "Wakil Menteri", img: "/api/placeholder/200/200" },
+  { role: "Menko Perekonomian", name: "Airlangga Hartarto", type: "Menteri", img: "/0603-airlangga-hartarto-menko.jpeg", socials: { x: '#', ig: '#', fb: '#', yt: '#', threads: '#' } },
+  { role: "Menteri ESDM", name: "Bahlil Lahadalia", type: "Menteri", img: "/1203-bahlil-lahadalia-esdm.jpg", socials: { x: '#', ig: '#', fb: '#', yt: '#', threads: '#' } },
+  { role: "Menteri Perindustrian", name: "Agus Gumiwang K.", type: "Menteri", img: "/0203-agus-gumiwang-kartasasmita.jpg", socials: { x: '#', ig: '#', fb: '#', yt: '#', threads: '#' } },
+  { role: "Menteri Komdigi", name: "Meutya Hafid", type: "Menteri", img: "[https://upload.wikimedia.org/wikipedia/commons/2/25/Meutya_Hafid.jpg](https://upload.wikimedia.org/wikipedia/commons/2/25/Meutya_Hafid.jpg)", socials: { x: '#', ig: '#', fb: '#', yt: '#', threads: '#' } },
+  { role: "Menteri Kependudukan", name: "Wihaji", type: "Menteri", img: "[https://upload.wikimedia.org/wikipedia/commons/c/cc/Wihaji.jpg](https://upload.wikimedia.org/wikipedia/commons/c/cc/Wihaji.jpg)", socials: { x: '#', ig: '#', fb: '#', yt: '#', threads: '#' } },
+  { role: "Menteri ATR/BPN", name: "Nusron Wahid", type: "Menteri", img: "[https://upload.wikimedia.org/wikipedia/commons/0/07/Nusron_Wahid.jpg](https://upload.wikimedia.org/wikipedia/commons/0/07/Nusron_Wahid.jpg)", socials: { x: '#', ig: '#', fb: '#', yt: '#', threads: '#' } },
+  { role: "Menteri UMKM", name: "Maman Abdurahman", type: "Menteri", img: "[https://upload.wikimedia.org/wikipedia/commons/9/97/Maman_Abdurrahman_-_Menteri_Usaha_Mikro%2C_Kecil%2C_dan_Menengah.jpg](https://upload.wikimedia.org/wikipedia/commons/9/97/Maman_Abdurrahman_-_Menteri_Usaha_Mikro%2C_Kecil%2C_dan_Menengah.jpg)", socials: { x: '#', ig: '#', fb: '#', yt: '#', threads: '#' } },
+  { role: "Menteri PPMI", name: "Mukhtarudin", type: "Menteri", img: "[https://ui-avatars.com/api/?name=Mukhtarudin&background=0f172a&color=facc15&size=200](https://ui-avatars.com/api/?name=Mukhtarudin&background=0f172a&color=facc15&size=200)", socials: { x: '#', ig: '#', fb: '#', yt: '#', threads: '#' } },
+  { role: "Gubernur Lemhannas", name: "Ace Hasan Syadzily", type: "Setingkat Menteri", img: "/1-3.jpeg", socials: { x: '#', ig: '#', fb: '#', yt: '#', threads: '#' } },
+  { role: "Wamen PPMI", name: "Christina Aryani", type: "Wakil Menteri", img: "[https://upload.wikimedia.org/wikipedia/commons/2/28/Christina_Aryani.jpg](https://upload.wikimedia.org/wikipedia/commons/2/28/Christina_Aryani.jpg)", socials: { x: '#', ig: '#', fb: '#', yt: '#', threads: '#' } },
+  { role: "Wamen Perdagangan", name: "Dyah Roro Esty", type: "Wakil Menteri", img: "[https://upload.wikimedia.org/wikipedia/commons/6/63/Dyah_Roro_Esti_Widya_Putri.jpg](https://upload.wikimedia.org/wikipedia/commons/6/63/Dyah_Roro_Esti_Widya_Putri.jpg)", socials: { x: '#', ig: '#', fb: '#', yt: '#', threads: '#' } },
 ];

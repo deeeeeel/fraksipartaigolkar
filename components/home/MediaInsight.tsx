@@ -19,7 +19,7 @@ export default function MediaInsight({ onSeeAll }: { onSeeAll: () => void }) {
         {MOCK_NEWS.slice(0, 3).map((news) => (
           <Link href={news.url} key={news.id} target="_blank" rel="noopener noreferrer" className="min-w-[280px] md:min-w-0 bg-white rounded-3xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-[0_10px_30px_rgb(0,0,0,0.06)] hover:-translate-y-1 transition-all duration-300 group flex flex-col snap-start">
             <div className="relative h-44 overflow-hidden bg-slate-100">
-              <Image src={news.image} alt={news.title} fill className="object-cover group-hover:scale-105 transition-transform duration-700" sizes="(max-width: 768px) 280px, 33vw" />
+              <img src={news.image} alt={news.title} className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-700" />
               <div className="absolute top-4 left-4"><span className="bg-white/90 backdrop-blur-sm text-slate-800 text-[9px] font-black uppercase px-2.5 py-1.5 rounded-lg shadow-sm">{news.tag}</span></div>
             </div>
             <div className="p-5 flex flex-col flex-1">

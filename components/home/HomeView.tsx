@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { 
@@ -63,7 +62,7 @@ export const HomeView = ({ initialMembers, komisiList }: HomeViewProps = {}) => 
 
   const filteredMembers = useMemo(() => {
     return members.filter((m: any) => {
-      const matchName = m.name?.toLowerCase().includes(search.toLowerCase()); // Sesuaikan field jika aslinya 'nama'
+      const matchName = m.name?.toLowerCase().includes(search.toLowerCase()) || m.nama?.toLowerCase().includes(search.toLowerCase());
       const matchDapil = m.dapil?.toLowerCase().includes(search.toLowerCase());
       const matchKomisi = activeKomisi === 'Semua' || m.komisi?.includes(activeKomisi);
       return (matchName || matchDapil) && matchKomisi;
@@ -167,7 +166,7 @@ export const HomeView = ({ initialMembers, komisiList }: HomeViewProps = {}) => 
                     <div className="absolute -right-10 -bottom-10 w-32 h-32 bg-yellow-500/20 rounded-full blur-2xl"></div>
                     <div className="flex items-center gap-5 relative z-10">
                       <div className="relative w-20 h-20 rounded-2xl overflow-hidden border-2 border-slate-600 bg-slate-700">
-                         <Image src={vip.img} alt={vip.name} fill className="object-cover" sizes="80px" />
+                         <img src={vip.img} alt={vip.name} className="w-full h-full object-cover" />
                       </div>
                       <div>
                         <p className="text-[10px] font-black text-yellow-400 uppercase tracking-widest mb-1">{vip.role}</p>
@@ -209,11 +208,22 @@ export const HomeView = ({ initialMembers, komisiList }: HomeViewProps = {}) => 
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredMembers.map((member: any, idx: number) => (
+              {filteredMembers.map((member: any, idx: number) => {
+                const memberName = member.name || member.nama || "Anggota Fraksi";
+                const imageUrl = member.image || member.foto || `https://ui-avatars.com/api/?name=${encodeURIComponent(memberName)}&background=e2e8f0&color=475569&size=400`;
+                
+                return (
                 <div key={idx} className="bg-white rounded-[2rem] overflow-hidden border border-slate-100 shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_15px_35px_rgb(0,0,0,0.08)] hover:-translate-y-2 transition-all duration-300 group cursor-pointer">
                   <div className="h-56 bg-slate-100 relative overflow-hidden flex items-end justify-center">
                      <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-yellow-400 to-slate-200"></div>
-                     <img src={"/api/placeholder/400/320"} alt={member.name || member.nama} className="object-cover object-bottom h-[95%] w-auto group-hover:scale-105 transition-transform duration-500 relative z-10" />
+                     <img 
+                        src={imageUrl} 
+                        alt={memberName} 
+                        className="object-cover object-bottom h-[95%] w-auto group-hover:scale-105 transition-transform duration-500 relative z-10" 
+                        onError={(e) => {
+                          e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(memberName)}&background=e2e8f0&color=475569&size=400`;
+                        }}
+                     />
                      <div className="absolute bottom-0 w-full h-24 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent z-20"></div>
                      <div className="absolute bottom-4 left-5 right-5 z-30 flex justify-between items-end">
                        <span className="text-[10px] font-black px-2.5 py-1 bg-yellow-400 text-slate-900 rounded-md uppercase tracking-wider shadow-sm border border-yellow-300">{member.komisi || 'Fraksi'}</span>
@@ -221,14 +231,14 @@ export const HomeView = ({ initialMembers, komisiList }: HomeViewProps = {}) => 
                   </div>
                   <div className="p-6 relative">
                     <div className="absolute -top-6 right-5 w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg border border-slate-50 text-slate-300 group-hover:text-yellow-600 transition-all duration-300 z-30"><ChevronRight className="w-5 h-5" /></div>
-                    <h3 className="font-black text-slate-800 text-lg leading-tight mb-2 group-hover:text-yellow-600 transition-colors line-clamp-1 pr-6">{member.name || member.nama}</h3>
+                    <h3 className="font-black text-slate-800 text-lg leading-tight mb-2 group-hover:text-yellow-600 transition-colors line-clamp-1 pr-6">{memberName}</h3>
                     <div className="flex items-center text-slate-500 text-xs font-semibold gap-1.5 mb-5"><MapPin className="w-4 h-4 text-slate-400" /><span className="truncate">{member.dapil}</span></div>
                     <div className="flex justify-between items-center pt-4 border-t border-slate-100">
                       <div><p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-0.5">Suara Sah 2024</p><p className="font-black text-slate-800 text-base">{(member.perolehan_suara || 0).toLocaleString('id-ID')}</p></div>
                     </div>
                   </div>
                 </div>
-              ))}
+              )})}
             </div>
           </div>
         )}
@@ -241,7 +251,7 @@ export const HomeView = ({ initialMembers, komisiList }: HomeViewProps = {}) => 
                  {MOCK_NEWS.map((news: any, index: number) => (
                   <Link href={news.url} target="_blank" rel="noopener noreferrer" key={news.id} className={`bg-white rounded-[2rem] overflow-hidden border border-slate-100 shadow-sm hover:shadow-[0_15px_35px_rgb(0,0,0,0.06)] hover:-translate-y-1.5 transition-all duration-300 group flex flex-col ${index === 0 ? 'md:col-span-2' : ''} h-full`}>
                     <div className={`relative overflow-hidden bg-slate-100 ${index === 0 ? 'h-64' : 'h-52'}`}>
-                      <Image src={news.image} alt={news.title} fill className="object-cover group-hover:scale-105 transition-transform duration-700" sizes="(max-width: 768px) 100vw, 66vw" />
+                      <img src={news.image} alt={news.title} className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-700" />
                       <div className="absolute top-5 left-5"><span className="bg-yellow-400 text-slate-900 text-[10px] font-black uppercase px-3 py-1.5 rounded-lg shadow-md border border-yellow-300 tracking-wider">{news.tag}</span></div>
                     </div>
                     <div className="p-6 flex flex-col flex-1">
