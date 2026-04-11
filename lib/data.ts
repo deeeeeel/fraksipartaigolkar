@@ -1,17 +1,33 @@
+import membersData from './members.json';
+
 export const KOMISI_LIST = ['Komisi I', 'Komisi II', 'Komisi III', 'Komisi IV', 'Komisi V', 'Komisi VI', 'Komisi VII', 'Komisi VIII', 'Komisi IX', 'Komisi X', 'Komisi XI', 'Komisi XII', 'Komisi XIII'];
 
-export const MOCK_MEMBERS = [
-  { id: 1, name: "T. Zulkarnaini Ampon Bang", dapil: "ACEH I", komisi: "Komisi VII", perolehan_suara: 82000, slug: "zulkarnaini", image: "[https://www.dpr.go.id/setjen/view-foto-anggota/2024/1.jpg](https://www.dpr.go.id/setjen/view-foto-anggota/2024/1.jpg)" },
-  { id: 2, name: "Ilham Pangestu", dapil: "ACEH II", komisi: "Komisi IV", perolehan_suara: 110000, slug: "ilham-pangestu", image: "[https://www.dpr.go.id/setjen/view-foto-anggota/2024/2.jpg](https://www.dpr.go.id/setjen/view-foto-anggota/2024/2.jpg)" },
-  { id: 3, name: "Samsul Bahri Tiyong", dapil: "ACEH II", komisi: "Komisi XIII", perolehan_suara: 95000, slug: "samsul-bahri", image: "[https://www.dpr.go.id/setjen/view-foto-anggota/2024/3.jpg](https://www.dpr.go.id/setjen/view-foto-anggota/2024/3.jpg)" },
-  { id: 4, name: "Musa Rajekshah", dapil: "SUMATERA UTARA I", komisi: "Komisi V", perolehan_suara: 190000, slug: "musa-rajekshah", image: "[https://www.dpr.go.id/setjen/view-foto-anggota/2024/4.jpg](https://www.dpr.go.id/setjen/view-foto-anggota/2024/4.jpg)" },
-  { id: 5, name: "Maruli Siahaan", dapil: "SUMATERA UTARA I", komisi: "Komisi XIII", perolehan_suara: 75000, slug: "maruli-siahaan", image: "[https://www.dpr.go.id/setjen/view-foto-anggota/2024/5.jpg](https://www.dpr.go.id/setjen/view-foto-anggota/2024/5.jpg)" },
-  { id: 6, name: "Lamhot Sinaga", dapil: "SUMATERA UTARA II", komisi: "Komisi VII", perolehan_suara: 158973, slug: "lamhot-sinaga", image: "[https://www.dpr.go.id/setjen/view-foto-anggota/2024/6.jpg](https://www.dpr.go.id/setjen/view-foto-anggota/2024/6.jpg)" }
-];
+// Helper untuk generate slug otomatis jika di JSON belum ada
+const generateSlug = (name: string) => {
+  if (!name) return '';
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+};
+
+// Mapping SEMUA data dari members.json agar formatnya konsisten
+export const MOCK_MEMBERS = (membersData as any[]).map((member, index) => ({
+  ...member,
+  id: member.id || index + 1,
+  name: member.name || member.nama,
+  slug: member.slug || generateSlug(member.name || member.nama || ''),
+  image: member.image || member.foto || '',
+}));
 
 // Fungsi getMembers untuk di-import oleh app/page.tsx
 export const getMembers = async () => {
   return MOCK_MEMBERS;
+};
+
+// Fungsi getMemberBySlug untuk di-import oleh app/anggota/[slug]/page.tsx
+export const getMemberBySlug = async (slug: string) => {
+  return MOCK_MEMBERS.find((member) => member.slug === slug) || null;
 };
 
 export const MOCK_NEWS = [
