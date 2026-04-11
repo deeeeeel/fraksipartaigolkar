@@ -1,9 +1,99 @@
-import membersData from './members.json';
+// ============================================================================
+// 1. DATA CALEG TERPILIH (102 KURS)
+// ============================================================================
+export const dprMembersData = [
+  { "nama":"T. Zulkarnaini Ampon Bang", "dapil":"ACEH I", "perolehan_suara":91816.0, "komisi":"Komisi VII" },
+  { "nama":"Ilham Pangestu", "dapil":"ACEH II", "perolehan_suara":204199.0, "komisi":"Komisi IV" },
+  { "nama":"Samsul Bahri Tiyong", "dapil":"ACEH II", "perolehan_suara":86109.0, "komisi":"Komisi XIII" },
+  { "nama":"Musa Rajekshah", "dapil":"SUMATERA UTARA I", "perolehan_suara":190990.0, "komisi":"Komisi V" },
+  { "nama":"Maruli Siahaan", "dapil":"SUMATERA UTARA I", "perolehan_suara":36530.0, "komisi":"Komisi XIII" },
+  { "nama":"Lamhot Sinaga", "dapil":"SUMATERA UTARA II", "perolehan_suara":158973.0, "komisi":"Komisi VII" },
+  { "nama":"Andar Amin Harahap", "dapil":"SUMATERA UTARA II", "perolehan_suara":140063.0, "komisi":"Komisi II" },
+  { "nama":"H. Trinovianto", "dapil":"SUMATERA UTARA II", "perolehan_suara":81404.0, "komisi":"Komisi V" },
+  { "nama":"Ahmad Doli Kurnia", "dapil":"SUMATERA UTARA III", "perolehan_suara":141846.0, "komisi":"Komisi II" },
+  { "nama":"Delia Pratiwi Sitepu", "dapil":"SUMATERA UTARA III", "perolehan_suara":119047.0, "komisi":"Komisi IX" },
+  { "nama":"H. Mangihut Sinaga", "dapil":"SUMATERA UTARA III", "perolehan_suara":116091.0, "komisi":"Komisi VI" },
+  { "nama":"Zigo Rolanda", "dapil":"SUMATERA BARAT I", "perolehan_suara":58057.0, "komisi":"Komisi V" },
+  { "nama":"Benny Utama", "dapil":"SUMATERA BARAT II", "perolehan_suara":75255.0, "komisi":"Komisi VI" },
+  { "nama":"Syamsuar", "dapil":"RIAU I", "perolehan_suara":101876.0, "komisi":"Komisi II" },
+  { "nama":"Karmila Sari", "dapil":"RIAU I", "perolehan_suara":89835.0, "komisi":"Komisi VI" },
+  { "nama":"Yulisman", "dapil":"RIAU II", "perolehan_suara":72183.0, "komisi":"Komisi XI" },
+  { "nama":"Cek Endra", "dapil":"JAMBI", "perolehan_suara":100112.0, "komisi":"Komisi I" },
+  { "nama":"H. Hasan Basri Agus", "dapil":"JAMBI", "perolehan_suara":87884.0, "komisi":"Komisi VIII" },
+  { "nama":"Kahar Muzakir", "dapil":"SUMATERA SELATAN I", "perolehan_suara":185597.0, "komisi":"Komisi XI" },
+  { "nama":"Yudha Novanza Utama", "dapil":"SUMATERA SELATAN I", "perolehan_suara":74790.0, "komisi":"Komisi I" },
+  { "nama":"Ahmad Wazir Noviadi", "dapil":"SUMATERA SELATAN II", "perolehan_suara":161595.0, "komisi":"Komisi II" },
+  { "nama":"Dewi Yustisiana", "dapil":"SUMATERA SELATAN II", "perolehan_suara":115429.0, "komisi":"Komisi IV" },
+  { "nama":"H. Mohammad Saleh", "dapil":"BENGKULU", "perolehan_suara":114733.0, "komisi":"Komisi IX" },
+  { "nama":"Rycko Menoza", "dapil":"LAMPUNG I", "perolehan_suara":53813.0, "komisi":"Komisi III" },
+  { "nama":"Hanan A. Rozak", "dapil":"LAMPUNG II", "perolehan_suara":111242.0, "komisi":"Komisi VI" },
+  { "nama":"Aprozi Alam", "dapil":"LAMPUNG II", "perolehan_suara":55008.0, "komisi":"Komisi V" },
+  { "nama":"Bambang Patijaya", "dapil":"BANGKA BELITUNG", "perolehan_suara":114965.0, "komisi":"Komisi VII" },
+  { "nama":"Rizki Faisal", "dapil":"KEPULAUAN RIAU", "perolehan_suara":73664.0, "komisi":"Komisi VII" },
+  { "nama":"Ario Bimo Nandito", "dapil":"DKI JAKARTA I", "perolehan_suara":55560.0, "komisi":"Komisi III" },
+  { "nama":"Abraham Sridjaja", "dapil":"DKI JAKARTA II", "perolehan_suara":76046.0, "komisi":"Komisi I" },
+  { "nama":"Erwin Aksa", "dapil":"DKI JAKARTA III", "perolehan_suara":186897.0, "komisi":"Komisi III" },
+  { "nama":"Atalia Praratya", "dapil":"JAWA BARAT I", "perolehan_suara":234065.0, "komisi":"Komisi VIII" },
+  { "nama":"Nurul Arifin", "dapil":"JAWA BARAT I", "perolehan_suara":63203.0, "komisi":"Komisi I" },
+  { "nama":"Tb. Ace Hasan Syadzily", "dapil":"JAWA BARAT II", "perolehan_suara":107704.0, "komisi":"Komisi VIII" },
+  { "nama":"Dadang M. Naser", "dapil":"JAWA BARAT II", "perolehan_suara":70984.0, "komisi":"Komisi II" },
+  { "nama":"Ilham Permana", "dapil":"JAWA BARAT III", "perolehan_suara":61731.0, "komisi":"Komisi V" },
+  { "nama":"Dewi Asmara", "dapil":"JAWA BARAT IV", "perolehan_suara":123216.0, "komisi":"Komisi IX" },
+  { "nama":"Ravindra Airlangga", "dapil":"JAWA BARAT V", "perolehan_suara":152168.0, "komisi":"Komisi VIII" },
+  { "nama":"Ranny Fahd A. Rafiq", "dapil":"JAWA BARAT VI", "perolehan_suara":177508.0, "komisi":"Komisi IX" },
+  { "nama":"Puteri Komarudin", "dapil":"JAWA BARAT VII", "perolehan_suara":142046.0, "komisi":"Komisi XI" },
+  { "nama":"Daniel Muttaqien S", "dapil":"JAWA BARAT VIII", "perolehan_suara":89360.0, "komisi":"Komisi V" },
+  { "nama":"Dave Akbarshah", "dapil":"JAWA BARAT VIII", "perolehan_suara":80526.0, "komisi":"Komisi I" },
+  { "nama":"Galiah Syabana", "dapil":"JAWA BARAT IX", "perolehan_suara":106093.0, "komisi":"Komisi X" },
+  { "nama":"Elita Budiati", "dapil":"JAWA BARAT IX", "perolehan_suara":82052.0, "komisi":"Komisi IV" },
+  { "nama":"Agun Gunandjar", "dapil":"JAWA BARAT X", "perolehan_suara":61935.0, "komisi":"Komisi III" },
+  { "nama":"Ade Ginanjar", "dapil":"JAWA BARAT XI", "perolehan_suara":212003.0, "komisi":"Komisi X" },
+  { "nama":"Firman Soebagyo", "dapil":"JAWA TENGAH I", "perolehan_suara":96262.0, "komisi":"Komisi IV" },
+  { "nama":"Nusron Wahid", "dapil":"JAWA TENGAH II", "perolehan_suara":135244.0, "komisi":"Komisi VI" },
+  { "nama":"Jamaludin Malik", "dapil":"JAWA TENGAH II", "perolehan_suara":71060.0, "komisi":"Komisi V" },
+  { "nama":"Riyono", "dapil":"JAWA TENGAH III", "perolehan_suara":123282.0, "komisi":"Komisi IV" },
+  { "nama":"Singgih Januratmoko", "dapil":"JAWA TENGAH IV", "perolehan_suara":125067.0, "komisi":"Komisi VI" },
+  { "nama":"A.S. Sukawijaya", "dapil":"JAWA TENGAH V", "perolehan_suara":71060.0, "komisi":"Komisi X" },
+  { "nama":"Panggah Susanto", "dapil":"JAWA TENGAH VI", "perolehan_suara":91104.0, "komisi":"Komisi IV" },
+  { "nama":"Taufiq R. Abdullah", "dapil":"JAWA TENGAH VII", "perolehan_suara":113337.0, "komisi":"Komisi I" },
+  { "nama":"Dito Ganinduto", "dapil":"JAWA TENGAH VIII", "perolehan_suara":104117.0, "komisi":"Komisi XI" },
+  { "nama":"Doni Akbar", "dapil":"JAWA TENGAH X", "perolehan_suara":110757.0, "komisi":"Komisi XI" },
+  { "nama":"Gandung Pardiman", "dapil":"DI YOGYAKARTA", "perolehan_suara":109867.0, "komisi":"Komisi VII" },
+  { "nama":"Adies Kadir", "dapil":"JAWA TIMUR I", "perolehan_suara":147185.0, "komisi":"Komisi III" },
+  { "nama":"M. Sarmuji", "dapil":"JAWA TIMUR VI", "perolehan_suara":183045.0, "komisi":"Komisi XI" },
+  { "nama":"Zainudin Amali", "dapil":"JAWA TIMUR I", "perolehan_suara":109867.0, "komisi":"Komisi VI" },
+  { "nama":"Ali Mufthi", "dapil":"JAWA TIMUR VII", "perolehan_suara":76877.0, "komisi":"Komisi V" },
+  { "nama":"H. Hasanuddin", "dapil":"JAWA TIMUR VIII", "perolehan_suara":68511.0, "komisi":"Komisi V" },
+  { "nama":"Haeny Relawati R", "dapil":"JAWA TIMUR IX", "perolehan_suara":173444.0, "komisi":"Komisi II" },
+  { "nama":"Tubagus Haerul", "dapil":"BANTEN I", "perolehan_suara":122469.0, "komisi":"Komisi I" },
+  { "nama":"Tubagus Chaeri W", "dapil":"BANTEN II", "perolehan_suara":114631.0, "komisi":"Komisi XI" },
+  { "nama":"Airin Rachmi Diany", "dapil":"BANTEN III", "perolehan_suara":302878.0, "komisi":"Komisi IX" },
+  { "nama":"Gde Sumarjaya", "dapil":"BALI", "perolehan_suara":90550.0, "komisi":"Komisi VI" },
+  { "nama":"Melkiades Laka", "dapil":"NUSA TENGGARA TIMUR II", "perolehan_suara":131150.0, "komisi":"Komisi XI" },
+  { "nama":"Maman Abdurrahman", "dapil":"KALIMANTAN BARAT I", "perolehan_suara":203514.0, "komisi":"Komisi VII" },
+  { "nama":"Mukhtarudin", "dapil":"KALIMANTAN BARAT I", "perolehan_suara":92147.0, "komisi":"Komisi VI" },
+  { "nama":"Bambang Heri P", "dapil":"KALIMANTAN SELATAN I", "perolehan_suara":161645.0, "komisi":"Komisi III" },
+  { "nama":"Rudy Mas'ud", "dapil":"KALIMANTAN TIMUR", "perolehan_suara":162772.0, "komisi":"Komisi VII" },
+  { "nama":"Muhidin Mohamad Said", "dapil":"SULAWESI TENGAH", "perolehan_suara":154301.0, "komisi":"Komisi XI" },
+  { "nama":"Beniyanto", "dapil":"SULAWESI TENGAH", "perolehan_suara":90078.0, "komisi":"Komisi XII" },
+  { "nama":"Hamka B. Kady M.S", "dapil":"SULAWESI SELATAN I", "perolehan_suara":119558.0, "komisi":"Komisi V" },
+  { "nama":"H.A.M. Nurdin Halid", "dapil":"SULAWESI SELATAN II", "perolehan_suara":70681.0, "komisi":"Komisi VI" },
+  { "nama":"H.M. Taufan Pawe", "dapil":"SULAWESI SELATAN II", "perolehan_suara":57955.0, "komisi":"Komisi II" },
+  { "nama":"Agustina Mangande", "dapil":"SULAWESI SELATAN III", "perolehan_suara":61394.0, "komisi":"Komisi II" },
+  { "nama":"Ridwan Bae", "dapil":"SULAWESI TENGGARA", "perolehan_suara":84530.0, "komisi":"Komisi V" },
+  { "nama":"Rusli Habibie", "dapil":"GORONTALO", "perolehan_suara":94781.0, "komisi":"Komisi VIII" },
+  { "nama":"Allen J.C. Pesik", "dapil":"MALUKU UTARA", "perolehan_suara":54231.0, "komisi":"Komisi V" },
+  { "nama":"Roberth Rouw", "dapil":"PAPUA", "perolehan_suara":114751.0, "komisi":"Komisi V" },
+  { "nama":"Alfons Manibui", "dapil":"PAPUA BARAT", "perolehan_suara":41782.0, "komisi":"Komisi IV" },
+  { "nama":"Soedeson Tandra", "dapil":"PAPUA TENGAH", "perolehan_suara":197995.0, "komisi":"Komisi III" },
+  { "nama":"Robert Joppy Kardinal", "dapil":"PAPUA BARAT DAYA", "perolehan_suara":53578.0, "komisi":"Komisi IV" }
+];
 
-export const KOMISI_LIST = ['Komisi I', 'Komisi II', 'Komisi III', 'Komisi IV', 'Komisi V', 'Komisi VI', 'Komisi VII', 'Komisi VIII', 'Komisi IX', 'Komisi X', 'Komisi XI', 'Komisi XII', 'Komisi XIII'];
 
-// Helper untuk generate slug otomatis jika di JSON belum ada
-const generateSlug = (name: string) => {
+// ============================================================================
+// 2. HELPER GENERATOR & DATA FORMATTER
+// ============================================================================
+export const generateSlug = (name: string) => {
   if (!name) return '';
   return name
     .toLowerCase()
@@ -11,34 +101,40 @@ const generateSlug = (name: string) => {
     .replace(/(^-|-$)/g, '');
 };
 
-// Mapping SEMUA data dari members.json agar formatnya konsisten
-export const MOCK_MEMBERS = (membersData as any[]).map((member, index) => ({
+// Mengubah dprMembersData mentah menjadi format object yang lebih rapi
+export const MOCK_MEMBERS = dprMembersData.map((member, index) => ({
   ...member,
-  id: member.id || index + 1,
-  name: member.name || member.nama,
-  slug: member.slug || generateSlug(member.name || member.nama || ''),
-  image: member.image || member.foto || '',
+  id: index + 1,
+  name: member.nama,
+  slug: generateSlug(member.nama),
+  // Menggunakan UI Avatars sebagai fallback otomatis apabila tidak ada gambar
+  image: `https://ui-avatars.com/api/?name=${encodeURIComponent(member.nama)}&background=e2e8f0&color=475569&size=400`,
 }));
 
-// Fungsi getMembers untuk di-import oleh app/page.tsx
+// Fungsi Wajib untuk Halaman & Routing Next.js
 export const getMembers = async () => {
   return MOCK_MEMBERS;
 };
 
-// Fungsi getMemberBySlug untuk di-import oleh app/anggota/[slug]/page.tsx
 export const getMemberBySlug = async (slug: string) => {
   return MOCK_MEMBERS.find((member) => member.slug === slug) || null;
 };
 
+
+// ============================================================================
+// 3. DATA DASHBOARD, KABINET & BERITA
+// ============================================================================
+export const KOMISI_LIST = ['Komisi I', 'Komisi II', 'Komisi III', 'Komisi IV', 'Komisi V', 'Komisi VI', 'Komisi VII', 'Komisi VIII', 'Komisi IX', 'Komisi X', 'Komisi XI', 'Komisi XII', 'Komisi XIII'];
+
 export const MOCK_NEWS = [
-  { id: 1, title: "Di Balik Stabilitas Indonesia, Ada Airlangga Hartarto dan Bahlil Lahadalia yang Bertarung di Tengah Krisis Global", date: "10 April 2026", tag: "Ekonomi Politik", url: "[https://golkarpedia.com/di-balik-stabilitas-indonesia-ada-airlangga-hartarto-dan-bahlil-lahadalia-yang-bertarung-di-tengah-krisis-global/](https://golkarpedia.com/di-balik-stabilitas-indonesia-ada-airlangga-hartarto-dan-bahlil-lahadalia-yang-bertarung-di-tengah-krisis-global/)", image: "/1-14.jpg" },
-  { id: 2, title: "Menteri ESDM Bahlil Lahadalia Ajak Warga Hemat Energi Mulai Dari Hal Sepele: Matikan Lampu!", date: "09 April 2026", tag: "Energi", url: "[https://golkarpedia.com/menteri-esdm-bahlil-lahadalia-ajak-warga-hemat-energi-mulai-dari-hal-sepele-matikan-lampu/](https://golkarpedia.com/menteri-esdm-bahlil-lahadalia-ajak-warga-hemat-energi-mulai-dari-hal-sepele-matikan-lampu/)", image: "/1203-bahlil-lahadalia-esdm.jpg" },
-  { id: 3, title: "Dari Konsolidasi Senyap ke Kemenangan Nyata, Legacy Ace Hasan Syadzily di Partai Golkar Jabar", date: "08 April 2026", tag: "Politik", url: "[https://golkarpedia.com/dari-konsolidasi-senyap-ke-kemenangan-nyata-legacy-ace-hasan-syadzily-di-partai-golkar-jabar/](https://golkarpedia.com/dari-konsolidasi-senyap-ke-kemenangan-nyata-legacy-ace-hasan-syadzily-di-partai-golkar-jabar/)", image: "/1-3.jpeg" },
-  { id: 4, title: "Sarmuji Sentil Isu Jatuhkan Prabowo: Ibarat Kereta, Rakyat yang Akan Dirugikan", date: "07 April 2026", tag: "Nasional", url: "[https://golkarpedia.com/sarmuji-sentil-isu-jatuhkan-prabowo-ibarat-kereta-rakyat-yang-akan-dirugikan/](https://golkarpedia.com/sarmuji-sentil-isu-jatuhkan-prabowo-ibarat-kereta-rakyat-yang-akan-dirugikan/)", image: "/0303-sekjen-golkar-sarmuji.jpg" },
-  { id: 5, title: "Perang Global Guncang Industri, Menperin Agus Gumiwang Wanti-wanti Rantai Pasok Terganggu", date: "06 April 2026", tag: "Industri", url: "[https://golkarpedia.com/perang-global-guncang-industri-menperin-agus-gumiwang-wanti-wanti-rantai-pasok-terganggu-inflasi-mengintai/](https://golkarpedia.com/perang-global-guncang-industri-menperin-agus-gumiwang-wanti-wanti-rantai-pasok-terganggu-inflasi-mengintai/)", image: "/0203-agus-gumiwang-kartasasmita.jpg" },
-  { id: 6, title: "Situasi Lebanon Mencekam, TNI Diperintahkan Masuk Bunker, Dave Laksono: Langkah Darurat Tepat", date: "05 April 2026", tag: "Pertahanan", url: "[https://golkarpedia.com/situasi-lebanon-mencekam-tni-diperintahkan-masuk-bunker-dave-laksono-ini-langkah-darurat-yang-tepat/](https://golkarpedia.com/situasi-lebanon-mencekam-tni-diperintahkan-masuk-bunker-dave-laksono-ini-langkah-darurat-yang-tepat/)", image: "/0503-dave-laksono-dpr.jpg" },
-  { id: 7, title: "Airlangga Hartarto Teken MoU Industri Perairan, RI Siap Jadi Pemain Baru Offshore Dunia", date: "04 April 2026", tag: "Ekonomi", url: "[https://golkarpedia.com/airlangga-hartarto-teken-mou-industri-perairan-ri-siap-jadi-pemain-baru-offshore-dunia/](https://golkarpedia.com/airlangga-hartarto-teken-mou-industri-perairan-ri-siap-jadi-pemain-baru-offshore-dunia/)", image: "/0603-airlangga-hartarto-menko.jpeg" },
-  { id: 8, title: "Darah Prajurit RI Tumpah di Lebanon, Sari Yuliati Murka: Serangan Keji Tak Bisa Dibiarkan!", date: "03 April 2026", tag: "Internasional", url: "[https://golkarpedia.com/darah-prajurit-ri-tumpah-di-lebanon-sari-yuliati-murka-ini-serangan-keji-yang-tak-bisa-dibiarkan/](https://golkarpedia.com/darah-prajurit-ri-tumpah-di-lebanon-sari-yuliati-murka-ini-serangan-keji-yang-tak-bisa-dibiarkan/)", image: "/7540d57a36f-9269-4c2f-aeb5-1761ba6e2bc2 (1).jpeg" }
+  { id: 1, title: "Di Balik Stabilitas Indonesia, Ada Airlangga Hartarto dan Bahlil Lahadalia yang Bertarung di Tengah Krisis Global", date: "10 April 2026", tag: "Ekonomi Politik", url: "https://golkarpedia.com/di-balik-stabilitas-indonesia-ada-airlangga-hartarto-dan-bahlil-lahadalia-yang-bertarung-di-tengah-krisis-global/", image: "/1-14.jpg" },
+  { id: 2, title: "Menteri ESDM Bahlil Lahadalia Ajak Warga Hemat Energi Mulai Dari Hal Sepele: Matikan Lampu!", date: "09 April 2026", tag: "Energi", url: "https://golkarpedia.com/menteri-esdm-bahlil-lahadalia-ajak-warga-hemat-energi-mulai-dari-hal-sepele-matikan-lampu/", image: "/1203-bahlil-lahadalia-esdm.jpg" },
+  { id: 3, title: "Dari Konsolidasi Senyap ke Kemenangan Nyata, Legacy Ace Hasan Syadzily di Partai Golkar Jabar", date: "08 April 2026", tag: "Politik", url: "https://golkarpedia.com/dari-konsolidasi-senyap-ke-kemenangan-nyata-legacy-ace-hasan-syadzily-di-partai-golkar-jabar/", image: "/1-3.jpeg" },
+  { id: 4, title: "Sarmuji Sentil Isu Jatuhkan Prabowo: Ibarat Kereta, Rakyat yang Akan Dirugikan", date: "07 April 2026", tag: "Nasional", url: "https://golkarpedia.com/sarmuji-sentil-isu-jatuhkan-prabowo-ibarat-kereta-rakyat-yang-akan-dirugikan/", image: "/0303-sekjen-golkar-sarmuji.jpg" },
+  { id: 5, title: "Perang Global Guncang Industri, Menperin Agus Gumiwang Wanti-wanti Rantai Pasok Terganggu", date: "06 April 2026", tag: "Industri", url: "https://golkarpedia.com/perang-global-guncang-industri-menperin-agus-gumiwang-wanti-wanti-rantai-pasok-terganggu-inflasi-mengintai/", image: "/0203-agus-gumiwang-kartasasmita.jpg" },
+  { id: 6, title: "Situasi Lebanon Mencekam, TNI Diperintahkan Masuk Bunker, Dave Laksono: Langkah Darurat Tepat", date: "05 April 2026", tag: "Pertahanan", url: "https://golkarpedia.com/situasi-lebanon-mencekam-tni-diperintahkan-masuk-bunker-dave-laksono-ini-langkah-darurat-yang-tepat/", image: "/0503-dave-laksono-dpr.jpg" },
+  { id: 7, title: "Airlangga Hartarto Teken MoU Industri Perairan, RI Siap Jadi Pemain Baru Offshore Dunia", date: "04 April 2026", tag: "Ekonomi", url: "https://golkarpedia.com/airlangga-hartarto-teken-mou-industri-perairan-ri-siap-jadi-pemain-baru-offshore-dunia/", image: "/0603-airlangga-hartarto-menko.jpeg" },
+  { id: 8, title: "Darah Prajurit RI Tumpah di Lebanon, Sari Yuliati Murka: Serangan Keji Tak Bisa Dibiarkan!", date: "03 April 2026", tag: "Internasional", url: "https://golkarpedia.com/darah-prajurit-ri-tumpah-di-lebanon-sari-yuliati-murka-ini-serangan-keji-yang-tak-bisa-dibiarkan/", image: "/7540d57a36f-9269-4c2f-aeb5-1761ba6e2bc2 (1).jpeg" }
 ];
 
 export const TICKER_NEWS = [
@@ -51,7 +147,7 @@ export const TICKER_NEWS = [
 export const VIP_ROSTER = [
   { role: "Ketua Fraksi", name: "M. Sarmuji", dapil: "Jawa Timur VI", img: "/0303-sekjen-golkar-sarmuji.jpg" },
   { role: "Sekretaris Fraksi", name: "Sari Yuliati", dapil: "Nusa Tenggara Barat II", img: "/7540d57a36f-9269-4c2f-aeb5-1761ba6e2bc2 (1).jpeg" },
-  { role: "Bendahara Fraksi", name: "Puteri Anneta Komaruddin", dapil: "Jawa Barat VII", img: "[https://ui-avatars.com/api/?name=Puteri+Anneta+Komaruddin&background=0f172a&color=facc15&size=400](https://ui-avatars.com/api/?name=Puteri+Anneta+Komaruddin&background=0f172a&color=facc15&size=400)" }
+  { role: "Bendahara Fraksi", name: "Puteri Anneta Komaruddin", dapil: "Jawa Barat VII", img: "https://ui-avatars.com/api/?name=Puteri+Anneta+Komaruddin&background=0f172a&color=facc15&size=400" }
 ];
 
 export const AGENDA_ITEMS = [
@@ -69,17 +165,164 @@ export const SENTIMENT_DATA = {
   totalMentions: "142.5K"
 };
 
-// Data jajaran Menteri lengkap dengan foto asli Wikipedia dan link Sosmed
 export const KABINET_ROSTER = [
   { role: "Menko Perekonomian", name: "Airlangga Hartarto", type: "Menteri", img: "/0603-airlangga-hartarto-menko.jpeg", socials: { x: '#', ig: '#', fb: '#', yt: '#', threads: '#' } },
   { role: "Menteri ESDM", name: "Bahlil Lahadalia", type: "Menteri", img: "/1203-bahlil-lahadalia-esdm.jpg", socials: { x: '#', ig: '#', fb: '#', yt: '#', threads: '#' } },
   { role: "Menteri Perindustrian", name: "Agus Gumiwang K.", type: "Menteri", img: "/0203-agus-gumiwang-kartasasmita.jpg", socials: { x: '#', ig: '#', fb: '#', yt: '#', threads: '#' } },
-  { role: "Menteri Komdigi", name: "Meutya Hafid", type: "Menteri", img: "[https://upload.wikimedia.org/wikipedia/commons/2/25/Meutya_Hafid.jpg](https://upload.wikimedia.org/wikipedia/commons/2/25/Meutya_Hafid.jpg)", socials: { x: '#', ig: '#', fb: '#', yt: '#', threads: '#' } },
-  { role: "Menteri Kependudukan", name: "Wihaji", type: "Menteri", img: "[https://upload.wikimedia.org/wikipedia/commons/c/cc/Wihaji.jpg](https://upload.wikimedia.org/wikipedia/commons/c/cc/Wihaji.jpg)", socials: { x: '#', ig: '#', fb: '#', yt: '#', threads: '#' } },
-  { role: "Menteri ATR/BPN", name: "Nusron Wahid", type: "Menteri", img: "[https://upload.wikimedia.org/wikipedia/commons/0/07/Nusron_Wahid.jpg](https://upload.wikimedia.org/wikipedia/commons/0/07/Nusron_Wahid.jpg)", socials: { x: '#', ig: '#', fb: '#', yt: '#', threads: '#' } },
-  { role: "Menteri UMKM", name: "Maman Abdurahman", type: "Menteri", img: "[https://upload.wikimedia.org/wikipedia/commons/9/97/Maman_Abdurrahman_-_Menteri_Usaha_Mikro%2C_Kecil%2C_dan_Menengah.jpg](https://upload.wikimedia.org/wikipedia/commons/9/97/Maman_Abdurrahman_-_Menteri_Usaha_Mikro%2C_Kecil%2C_dan_Menengah.jpg)", socials: { x: '#', ig: '#', fb: '#', yt: '#', threads: '#' } },
-  { role: "Menteri PPMI", name: "Mukhtarudin", type: "Menteri", img: "[https://ui-avatars.com/api/?name=Mukhtarudin&background=0f172a&color=facc15&size=200](https://ui-avatars.com/api/?name=Mukhtarudin&background=0f172a&color=facc15&size=200)", socials: { x: '#', ig: '#', fb: '#', yt: '#', threads: '#' } },
+  { role: "Menteri Komdigi", name: "Meutya Hafid", type: "Menteri", img: "https://upload.wikimedia.org/wikipedia/commons/2/25/Meutya_Hafid.jpg", socials: { x: '#', ig: '#', fb: '#', yt: '#', threads: '#' } },
+  { role: "Menteri Kependudukan", name: "Wihaji", type: "Menteri", img: "https://upload.wikimedia.org/wikipedia/commons/c/cc/Wihaji.jpg", socials: { x: '#', ig: '#', fb: '#', yt: '#', threads: '#' } },
+  { role: "Menteri ATR/BPN", name: "Nusron Wahid", type: "Menteri", img: "https://upload.wikimedia.org/wikipedia/commons/0/07/Nusron_Wahid.jpg", socials: { x: '#', ig: '#', fb: '#', yt: '#', threads: '#' } },
+  { role: "Menteri UMKM", name: "Maman Abdurahman", type: "Menteri", img: "https://upload.wikimedia.org/wikipedia/commons/9/97/Maman_Abdurrahman_-_Menteri_Usaha_Mikro%2C_Kecil%2C_dan_Menengah.jpg", socials: { x: '#', ig: '#', fb: '#', yt: '#', threads: '#' } },
+  { role: "Menteri PPMI", name: "Mukhtarudin", type: "Menteri", img: "https://ui-avatars.com/api/?name=Mukhtarudin&background=0f172a&color=facc15&size=200", socials: { x: '#', ig: '#', fb: '#', yt: '#', threads: '#' } },
   { role: "Gubernur Lemhannas", name: "Ace Hasan Syadzily", type: "Setingkat Menteri", img: "/1-3.jpeg", socials: { x: '#', ig: '#', fb: '#', yt: '#', threads: '#' } },
-  { role: "Wamen PPMI", name: "Christina Aryani", type: "Wakil Menteri", img: "[https://upload.wikimedia.org/wikipedia/commons/2/28/Christina_Aryani.jpg](https://upload.wikimedia.org/wikipedia/commons/2/28/Christina_Aryani.jpg)", socials: { x: '#', ig: '#', fb: '#', yt: '#', threads: '#' } },
-  { role: "Wamen Perdagangan", name: "Dyah Roro Esty", type: "Wakil Menteri", img: "[https://upload.wikimedia.org/wikipedia/commons/6/63/Dyah_Roro_Esti_Widya_Putri.jpg](https://upload.wikimedia.org/wikipedia/commons/6/63/Dyah_Roro_Esti_Widya_Putri.jpg)", socials: { x: '#', ig: '#', fb: '#', yt: '#', threads: '#' } },
+  { role: "Wamen PPMI", name: "Christina Aryani", type: "Wakil Menteri", img: "https://upload.wikimedia.org/wikipedia/commons/2/28/Christina_Aryani.jpg", socials: { x: '#', ig: '#', fb: '#', yt: '#', threads: '#' } },
+  { role: "Wamen Perdagangan", name: "Dyah Roro Esty", type: "Wakil Menteri", img: "https://upload.wikimedia.org/wikipedia/commons/6/63/Dyah_Roro_Esti_Widya_Putri.jpg", socials: { x: '#', ig: '#', fb: '#', yt: '#', threads: '#' } },
+];
+
+
+// ============================================================================
+// 4. DATA PEMETAAN GEOSPASIAL (Peta Interaktif)
+// ============================================================================
+export const provincialResults2024 = [
+  { province: "Aceh", votes: 341855, seats: 3, status: "Kuat" },
+  { province: "Sumatera Utara", votes: 1712015, seats: 8, status: "Pemenang" },
+  { province: "Sumatera Barat", votes: 457855, seats: 3, status: "Kuat" },
+  { province: "Riau", votes: 821455, seats: 3, status: "Stabil" },
+  { province: "Jambi", votes: 367120, seats: 2, status: "Stabil" },
+  { province: "Sumatera Selatan", votes: 1005621, seats: 4, status: "Basis Kuat" },
+  { province: "Bengkulu", votes: 324563, seats: 1, status: "Pemenang" },
+  { province: "Lampung", votes: 1102455, seats: 5, status: "Stabil" },
+  { province: "Kepulauan Riau", votes: 166147, seats: 1, status: "Pemenang" },
+  { province: "Bangka Belitung", votes: 115549, seats: 1, status: "Stabil" },
+  { province: "DKI Jakarta", votes: 641460, seats: 3, status: "Meningkat" },
+  { province: "Jawa Barat", votes: 3590621, seats: 17, status: "Pemenang" },
+  { province: "Jawa Tengah", votes: 2251692, seats: 12, status: "Stabil" },
+  { province: "DI Yogyakarta", votes: 256811, seats: 1, status: "Stabil" },
+  { province: "Jawa Timur", votes: 2572407, seats: 13, status: "Naik" },
+  { province: "Banten", votes: 1118524, seats: 5, status: "Naik" },
+  { province: "Bali", votes: 333521, seats: 1, status: "Meningkat" },
+  { province: "Nusa Tenggara Barat", votes: 330261, seats: 1, status: "Stabil" },
+  { province: "Nusa Tenggara Timur", votes: 531238, seats: 3, status: "Kuat" },
+  { province: "Kalimantan Barat", votes: 752100, seats: 3, status: "Naik" },
+  { province: "Kalimantan Tengah", votes: 193871, seats: 1, status: "Meningkat" },
+  { province: "Kalimantan Selatan", votes: 541004, seats: 3, status: "Pemenang" },
+  { province: "Kalimantan Timur", votes: 538147, seats: 2, status: "Pemenang" },
+  { province: "Kalimantan Utara", votes: 54228, seats: 0, status: "Penurunan" },
+  { province: "Sulawesi Utara", votes: 213197, seats: 1, status: "Stabil" },
+  { province: "Sulawesi Tengah", votes: 330554, seats: 1, status: "Pemenang" },
+  { province: "Sulawesi Selatan", votes: 1412474, seats: 7, status: "Basis Kuat" },
+  { province: "Sulawesi Tenggara", votes: 213233, seats: 1, status: "Stabil" },
+  { province: "Gorontalo", votes: 163074, seats: 1, status: "Pemenang" },
+  { province: "Sulawesi Barat", votes: 104271, seats: 0, status: "Penurunan" },
+  { province: "Maluku", votes: 112100, seats: 0, status: "Penurunan" },
+  { province: "Maluku Utara", votes: 125132, seats: 1, status: "Meningkat" },
+  { province: "Papua", votes: 254121, seats: 1, status: "Pemenang" },
+  { province: "Papua Barat", votes: 94101, seats: 1, status: "Pemenang" },
+  { province: "Papua Selatan", votes: 102450, seats: 0, status: "Penurunan" },
+  { province: "Papua Tengah", votes: 421312, seats: 1, status: "Pemenang" },
+  { province: "Papua Pegunungan", votes: 241512, seats: 0, status: "Penurunan" },
+  { province: "Papua Barat Daya", votes: 91201, seats: 1, status: "Pemenang" },
+];
+
+export const provCoords = {
+  "Aceh": [4.6951, 96.7494], "Sumatera Utara": [2.1154, 99.5451], "Sumatera Barat": [-0.7399, 100.8000],
+  "Riau": [0.2933, 101.7068], "Jambi": [-1.6101, 103.6131], "Sumatera Selatan": [-3.3194, 104.0000],
+  "Bengkulu": [-3.7928, 102.2608], "Lampung": [-4.5586, 105.4068], "Kepulauan Riau": [3.9456, 108.1429],
+  "Bangka Belitung": [-2.7411, 106.4406], "DKI Jakarta": [-6.2088, 106.8456], "Jawa Barat": [-6.9204, 107.6046],
+  "Jawa Tengah": [-7.1509, 110.1403], "DI Yogyakarta": [-7.7956, 110.3695], "Jawa Timur": [-7.9666, 112.3217],
+  "Banten": [-6.4058, 106.0640], "Bali": [-8.4095, 115.1889], "Nusa Tenggara Barat": [-8.6529, 117.3616],
+  "Nusa Tenggara Timur": [-8.6574, 121.0794], "Kalimantan Barat": [-0.2788, 111.4753], "Kalimantan Tengah": [-1.6815, 113.3824],
+  "Kalimantan Selatan": [-3.0926, 115.2838], "Kalimantan Timur": [0.5387, 116.4194], "Kalimantan Utara": [3.0731, 116.0414],
+  "Sulawesi Utara": [0.6247, 123.9750], "Gorontalo": [0.6999, 122.4467], "Sulawesi Tengah": [-1.4300, 121.4456],
+  "Sulawesi Selatan": [-4.1449, 119.9071], "Sulawesi Tenggara": [-4.1449, 122.0700], "Sulawesi Barat": [-2.8441, 119.2321],
+  "Maluku": [-3.2385, 130.1453], "Maluku Utara": [1.5709, 127.8088], "Papua": [-2.5, 140.0],
+  "Papua Barat": [-1.3, 133.1], "Papua Selatan": [-8.0, 139.0], "Papua Tengah": [-4.0, 136.0],
+  "Papua Pegunungan": [-4.0, 139.0], "Papua Barat Daya": [-1.0, 132.0]
+};
+
+export const dapilData = [
+  { province: "Aceh", dapil: "Aceh I", electorate: 1964576, seats: 7, coords: [5.55, 95.31] },
+  { province: "Aceh", dapil: "Aceh II", electorate: 1777461, seats: 6, coords: [4.6, 97.5] },
+  { province: "Sumatera Utara", dapil: "Sumatera Utara I", electorate: 3895322, seats: 10, coords: [3.59, 98.67] },
+  { province: "Sumatera Utara", dapil: "Sumatera Utara II", electorate: 3438838, seats: 10, coords: [1.74, 98.78] },
+  { province: "Sumatera Utara", dapil: "Sumatera Utara III", electorate: 3519780, seats: 10, coords: [2.96, 99.06] },
+  { province: "Sumatera Barat", dapil: "Sumatera Barat I", electorate: 2298162, seats: 8, coords: [-0.9, 100.3] },
+  { province: "Sumatera Barat", dapil: "Sumatera Barat II", electorate: 1790444, seats: 6, coords: [-0.2, 100.6] },
+  { province: "Riau", dapil: "Riau I", electorate: 2763848, seats: 7, coords: [0.5, 101.4] },
+  { province: "Riau", dapil: "Riau II", electorate: 1968326, seats: 6, coords: [-0.3, 102.3] },
+  { province: "Jambi", dapil: "Jambi", electorate: 2676107, seats: 8, coords: [-1.6, 103.6] },
+  { province: "Sumatera Selatan", dapil: "Sumatera Selatan I", electorate: 2261058, seats: 8, coords: [-2.9, 104.7] },
+  { province: "Sumatera Selatan", dapil: "Sumatera Selatan II", electorate: 2277166, seats: 9, coords: [-3.8, 103.8] },
+  { province: "Bengkulu", dapil: "Bengkulu", electorate: 1494000, seats: 4, coords: [-3.8, 102.2] },
+  { province: "Lampung", dapil: "Lampung I", electorate: 2656346, seats: 10, coords: [-5.4, 105.2] },
+  { province: "Lampung", dapil: "Lampung II", electorate: 2465324, seats: 10, coords: [-4.8, 104.8] },
+  { province: "Kepulauan Bangka Belitung", dapil: "Bangka Belitung", electorate: 1067000, seats: 3, coords: [-2.1, 106.1] },
+  { province: "Kepulauan Riau", dapil: "Kepulauan Riau", electorate: 1500974, seats: 4, coords: [0.9, 104.4] },
+  { province: "DKI Jakarta", dapil: "DKI Jakarta I", electorate: 2125000, seats: 6, coords: [-6.2, 106.9] },
+  { province: "DKI Jakarta", dapil: "DKI Jakarta II", electorate: 2450000, seats: 7, coords: [-6.25, 106.8] },
+  { province: "DKI Jakarta", dapil: "DKI Jakarta III", electorate: 2800000, seats: 8, coords: [-6.1, 106.7] },
+  { province: "Jawa Barat", dapil: "Jawa Barat I", electorate: 1704764, seats: 7, coords: [-6.9, 107.6] },
+  { province: "Jawa Barat", dapil: "Jawa Barat II", electorate: 2322238, seats: 10, coords: [-7.0, 107.5] },
+  { province: "Jawa Barat", dapil: "Jawa Barat III", electorate: 2090000, seats: 9, coords: [-6.5, 106.8] },
+  { province: "Jawa Barat", dapil: "Jawa Barat IV", electorate: 1400000, seats: 6, coords: [-6.9, 106.9] },
+  { province: "Jawa Barat", dapil: "Jawa Barat V", electorate: 2100000, seats: 9, coords: [-6.5, 106.6] },
+  { province: "Jawa Barat", dapil: "Jawa Barat VI", electorate: 1420000, seats: 6, coords: [-6.3, 106.8] },
+  { province: "Jawa Barat", dapil: "Jawa Barat VII", electorate: 2350000, seats: 10, coords: [-6.2, 107.2] },
+  { province: "Jawa Barat", dapil: "Jawa Barat VIII", electorate: 2110000, seats: 9, coords: [-6.7, 108.5] },
+  { province: "Jawa Barat", dapil: "Jawa Barat IX", electorate: 1870000, seats: 8, coords: [-6.5, 107.9] },
+  { province: "Jawa Barat", dapil: "Jawa Barat X", electorate: 1640000, seats: 7, coords: [-7.3, 108.3] },
+  { province: "Jawa Barat", dapil: "Jawa Barat XI", electorate: 2330000, seats: 10, coords: [-7.3, 107.9] },
+  { province: "Jawa Tengah", dapil: "Jawa Tengah I", electorate: 1572120, seats: 8, coords: [-6.9, 110.4] },
+  { province: "Jawa Tengah", dapil: "Jawa Tengah II", electorate: 1650000, seats: 7, coords: [-6.8, 110.8] },
+  { province: "Jawa Tengah", dapil: "Jawa Tengah III", electorate: 2120000, seats: 9, coords: [-7.1, 111.0] },
+  { province: "Jawa Tengah", dapil: "Jawa Tengah IV", electorate: 1640000, seats: 7, coords: [-7.8, 110.9] },
+  { province: "Jawa Tengah", dapil: "Jawa Tengah V", electorate: 1880000, seats: 8, coords: [-7.5, 110.8] },
+  { province: "Jawa Tengah", dapil: "Jawa Tengah VI", electorate: 1875000, seats: 8, coords: [-7.5, 110.2] },
+  { province: "Jawa Tengah", dapil: "Jawa Tengah VII", electorate: 1645000, seats: 7, coords: [-7.3, 109.3] },
+  { province: "Jawa Tengah", dapil: "Jawa Tengah VIII", electorate: 1890000, seats: 8, coords: [-7.4, 109.0] },
+  { province: "Jawa Tengah", dapil: "Jawa Tengah IX", electorate: 1885000, seats: 8, coords: [-6.8, 109.0] },
+  { province: "Jawa Tengah", dapil: "Jawa Tengah X", electorate: 1630000, seats: 7, coords: [-6.9, 109.6] },
+  { province: "DI Yogyakarta", dapil: "DI Yogyakarta", electorate: 2870000, seats: 8, coords: [-7.8, 110.3] },
+  { province: "Jawa Timur", dapil: "Jawa Timur I", electorate: 2154422, seats: 10, coords: [-7.2, 112.7] },
+  { province: "Jawa Timur", dapil: "Jawa Timur II", electorate: 1650000, seats: 7, coords: [-7.6, 112.9] },
+  { province: "Jawa Timur", dapil: "Jawa Timur III", electorate: 1640000, seats: 7, coords: [-8.1, 114.0] },
+  { province: "Jawa Timur", dapil: "Jawa Timur IV", electorate: 1880000, seats: 8, coords: [-8.1, 113.2] },
+  { province: "Jawa Timur", dapil: "Jawa Timur V", electorate: 1870000, seats: 8, coords: [-7.9, 112.6] },
+  { province: "Jawa Timur", dapil: "Jawa Timur VI", electorate: 2100000, seats: 9, coords: [-8.0, 112.0] },
+  { province: "Jawa Timur", dapil: "Jawa Timur VII", electorate: 1890000, seats: 8, coords: [-7.8, 111.4] },
+  { province: "Jawa Timur", dapil: "Jawa Timur VIII", electorate: 2350000, seats: 10, coords: [-7.4, 112.0] },
+  { province: "Jawa Timur", dapil: "Jawa Timur IX", electorate: 1410000, seats: 6, coords: [-7.1, 111.8] },
+  { province: "Jawa Timur", dapil: "Jawa Timur X", electorate: 1420000, seats: 6, coords: [-7.1, 112.4] },
+  { province: "Jawa Timur", dapil: "Jawa Timur XI", electorate: 1885000, seats: 8, coords: [-7.0, 113.8] },
+  { province: "Banten", dapil: "Banten I", electorate: 1420000, seats: 6, coords: [-6.6, 105.6] },
+  { province: "Banten", dapil: "Banten II", electorate: 1410000, seats: 6, coords: [-6.1, 106.1] },
+  { province: "Banten", dapil: "Banten III", electorate: 2350000, seats: 10, coords: [-6.2, 106.6] },
+  { province: "Bali", dapil: "Bali", electorate: 3260000, seats: 9, coords: [-8.4, 115.2] },
+  { province: "Nusa Tenggara Barat", dapil: "NTB I", electorate: 1050000, seats: 3, coords: [-8.4, 117.4] },
+  { province: "Nusa Tenggara Barat", dapil: "NTB II", electorate: 2800000, seats: 8, coords: [-8.6, 116.1] },
+  { province: "Nusa Tenggara Timur", dapil: "NTT I", electorate: 2120000, seats: 6, coords: [-8.6, 120.4] },
+  { province: "Nusa Tenggara Timur", dapil: "NTT II", electorate: 2470000, seats: 7, coords: [-9.8, 124.2] },
+  { province: "Kalimantan Barat", dapil: "Kalimantan Barat I", electorate: 2800000, seats: 8, coords: [0.0, 109.3] },
+  { province: "Kalimantan Barat", dapil: "Kalimantan Barat II", electorate: 1400000, seats: 4, coords: [0.3, 111.4] },
+  { province: "Kalimantan Tengah", dapil: "Kalimantan Tengah", electorate: 1900000, seats: 6, coords: [-1.6, 113.3] },
+  { province: "Kalimantan Selatan", dapil: "Kalimantan Selatan I", electorate: 2100000, seats: 6, coords: [-3.3, 114.5] },
+  { province: "Kalimantan Selatan", dapil: "Kalimantan Selatan II", electorate: 1750000, seats: 5, coords: [-2.8, 115.3] },
+  { province: "Kalimantan Timur", dapil: "Kalimantan Timur", electorate: 2750000, seats: 8, coords: [0.5, 116.4] },
+  { province: "Kalimantan Utara", dapil: "Kalimantan Utara", electorate: 504000, seats: 3, coords: [3.0, 116.0] },
+  { province: "Sulawesi Utara", dapil: "Sulawesi Utara", electorate: 1980000, seats: 6, coords: [1.4, 124.8] },
+  { province: "Gorontalo", dapil: "Gorontalo", electorate: 880000, seats: 3, coords: [0.5, 122.0] },
+  { province: "Sulawesi Tengah", dapil: "Sulawesi Tengah", electorate: 2230000, seats: 7, coords: [-1.4, 121.4] },
+  { province: "Sulawesi Selatan", dapil: "Sulawesi Selatan I", electorate: 2365769, seats: 8, coords: [-5.1, 119.4] },
+  { province: "Sulawesi Selatan", dapil: "Sulawesi Selatan II", electorate: 2600000, seats: 9, coords: [-4.0, 119.6] },
+  { province: "Sulawesi Selatan", dapil: "Sulawesi Selatan III", electorate: 2050000, seats: 7, coords: [-3.0, 120.0] },
+  { province: "Sulawesi Tenggara", dapil: "Sulawesi Tenggara", electorate: 1800000, seats: 6, coords: [-4.0, 122.0] },
+  { province: "Sulawesi Barat", dapil: "Sulawesi Barat", electorate: 980000, seats: 4, coords: [-2.8, 119.2] },
+  { province: "Maluku", dapil: "Maluku", electorate: 1300000, seats: 4, coords: [-3.2, 130.1] },
+  { province: "Maluku Utara", dapil: "Maluku Utara", electorate: 950000, seats: 3, coords: [1.5, 127.8] },
+  { province: "Papua", dapil: "Papua", electorate: 720000, seats: 3, coords: [-2.5, 140.0] },
+  { province: "Papua Barat", dapil: "Papua Barat", electorate: 380000, seats: 3, coords: [-1.3, 133.1] },
+  { province: "Papua Selatan", dapil: "Papua Selatan", electorate: 350000, seats: 3, coords: [-8.0, 139.0] },
+  { province: "Papua Tengah", dapil: "Papua Tengah", electorate: 1100000, seats: 3, coords: [-4.0, 136.0] },
+  { province: "Papua Pegunungan", dapil: "Papua Pegunungan", electorate: 1300000, seats: 3, coords: [-4.0, 139.0] },
+  { province: "Papua Barat Daya", dapil: "Papua Barat Daya", electorate: 440000, seats: 3, coords: [-1.0, 132.0] }
 ];
