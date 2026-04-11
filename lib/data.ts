@@ -1,94 +1,9 @@
+import membersData from './members.json';
+
 // ============================================================================
 // 1. DATA CALEG TERPILIH (102 KURS)
 // ============================================================================
-export const dprMembersData = [
-  { "nama":"T. Zulkarnaini Ampon Bang", "dapil":"ACEH I", "perolehan_suara":91816.0, "komisi":"Komisi VII" },
-  { "nama":"Ilham Pangestu", "dapil":"ACEH II", "perolehan_suara":204199.0, "komisi":"Komisi IV" },
-  { "nama":"Samsul Bahri Tiyong", "dapil":"ACEH II", "perolehan_suara":86109.0, "komisi":"Komisi XIII" },
-  { "nama":"Musa Rajekshah", "dapil":"SUMATERA UTARA I", "perolehan_suara":190990.0, "komisi":"Komisi V" },
-  { "nama":"Maruli Siahaan", "dapil":"SUMATERA UTARA I", "perolehan_suara":36530.0, "komisi":"Komisi XIII" },
-  { "nama":"Lamhot Sinaga", "dapil":"SUMATERA UTARA II", "perolehan_suara":158973.0, "komisi":"Komisi VII" },
-  { "nama":"Andar Amin Harahap", "dapil":"SUMATERA UTARA II", "perolehan_suara":140063.0, "komisi":"Komisi II" },
-  { "nama":"H. Trinovianto", "dapil":"SUMATERA UTARA II", "perolehan_suara":81404.0, "komisi":"Komisi V" },
-  { "nama":"Ahmad Doli Kurnia", "dapil":"SUMATERA UTARA III", "perolehan_suara":141846.0, "komisi":"Komisi II" },
-  { "nama":"Delia Pratiwi Sitepu", "dapil":"SUMATERA UTARA III", "perolehan_suara":119047.0, "komisi":"Komisi IX" },
-  { "nama":"H. Mangihut Sinaga", "dapil":"SUMATERA UTARA III", "perolehan_suara":116091.0, "komisi":"Komisi VI" },
-  { "nama":"Zigo Rolanda", "dapil":"SUMATERA BARAT I", "perolehan_suara":58057.0, "komisi":"Komisi V" },
-  { "nama":"Benny Utama", "dapil":"SUMATERA BARAT II", "perolehan_suara":75255.0, "komisi":"Komisi VI" },
-  { "nama":"Syamsuar", "dapil":"RIAU I", "perolehan_suara":101876.0, "komisi":"Komisi II" },
-  { "nama":"Karmila Sari", "dapil":"RIAU I", "perolehan_suara":89835.0, "komisi":"Komisi VI" },
-  { "nama":"Yulisman", "dapil":"RIAU II", "perolehan_suara":72183.0, "komisi":"Komisi XI" },
-  { "nama":"Cek Endra", "dapil":"JAMBI", "perolehan_suara":100112.0, "komisi":"Komisi I" },
-  { "nama":"H. Hasan Basri Agus", "dapil":"JAMBI", "perolehan_suara":87884.0, "komisi":"Komisi VIII" },
-  { "nama":"Kahar Muzakir", "dapil":"SUMATERA SELATAN I", "perolehan_suara":185597.0, "komisi":"Komisi XI" },
-  { "nama":"Yudha Novanza Utama", "dapil":"SUMATERA SELATAN I", "perolehan_suara":74790.0, "komisi":"Komisi I" },
-  { "nama":"Ahmad Wazir Noviadi", "dapil":"SUMATERA SELATAN II", "perolehan_suara":161595.0, "komisi":"Komisi II" },
-  { "nama":"Dewi Yustisiana", "dapil":"SUMATERA SELATAN II", "perolehan_suara":115429.0, "komisi":"Komisi IV" },
-  { "nama":"H. Mohammad Saleh", "dapil":"BENGKULU", "perolehan_suara":114733.0, "komisi":"Komisi IX" },
-  { "nama":"Rycko Menoza", "dapil":"LAMPUNG I", "perolehan_suara":53813.0, "komisi":"Komisi III" },
-  { "nama":"Hanan A. Rozak", "dapil":"LAMPUNG II", "perolehan_suara":111242.0, "komisi":"Komisi VI" },
-  { "nama":"Aprozi Alam", "dapil":"LAMPUNG II", "perolehan_suara":55008.0, "komisi":"Komisi V" },
-  { "nama":"Bambang Patijaya", "dapil":"BANGKA BELITUNG", "perolehan_suara":114965.0, "komisi":"Komisi VII" },
-  { "nama":"Rizki Faisal", "dapil":"KEPULAUAN RIAU", "perolehan_suara":73664.0, "komisi":"Komisi VII" },
-  { "nama":"Ario Bimo Nandito", "dapil":"DKI JAKARTA I", "perolehan_suara":55560.0, "komisi":"Komisi III" },
-  { "nama":"Abraham Sridjaja", "dapil":"DKI JAKARTA II", "perolehan_suara":76046.0, "komisi":"Komisi I" },
-  { "nama":"Erwin Aksa", "dapil":"DKI JAKARTA III", "perolehan_suara":186897.0, "komisi":"Komisi III" },
-  { "nama":"Atalia Praratya", "dapil":"JAWA BARAT I", "perolehan_suara":234065.0, "komisi":"Komisi VIII" },
-  { "nama":"Nurul Arifin", "dapil":"JAWA BARAT I", "perolehan_suara":63203.0, "komisi":"Komisi I" },
-  { "nama":"Tb. Ace Hasan Syadzily", "dapil":"JAWA BARAT II", "perolehan_suara":107704.0, "komisi":"Komisi VIII" },
-  { "nama":"Dadang M. Naser", "dapil":"JAWA BARAT II", "perolehan_suara":70984.0, "komisi":"Komisi II" },
-  { "nama":"Ilham Permana", "dapil":"JAWA BARAT III", "perolehan_suara":61731.0, "komisi":"Komisi V" },
-  { "nama":"Dewi Asmara", "dapil":"JAWA BARAT IV", "perolehan_suara":123216.0, "komisi":"Komisi IX" },
-  { "nama":"Ravindra Airlangga", "dapil":"JAWA BARAT V", "perolehan_suara":152168.0, "komisi":"Komisi VIII" },
-  { "nama":"Ranny Fahd A. Rafiq", "dapil":"JAWA BARAT VI", "perolehan_suara":177508.0, "komisi":"Komisi IX" },
-  { "nama":"Puteri Komarudin", "dapil":"JAWA BARAT VII", "perolehan_suara":142046.0, "komisi":"Komisi XI" },
-  { "nama":"Daniel Muttaqien S", "dapil":"JAWA BARAT VIII", "perolehan_suara":89360.0, "komisi":"Komisi V" },
-  { "nama":"Dave Akbarshah", "dapil":"JAWA BARAT VIII", "perolehan_suara":80526.0, "komisi":"Komisi I" },
-  { "nama":"Galiah Syabana", "dapil":"JAWA BARAT IX", "perolehan_suara":106093.0, "komisi":"Komisi X" },
-  { "nama":"Elita Budiati", "dapil":"JAWA BARAT IX", "perolehan_suara":82052.0, "komisi":"Komisi IV" },
-  { "nama":"Agun Gunandjar", "dapil":"JAWA BARAT X", "perolehan_suara":61935.0, "komisi":"Komisi III" },
-  { "nama":"Ade Ginanjar", "dapil":"JAWA BARAT XI", "perolehan_suara":212003.0, "komisi":"Komisi X" },
-  { "nama":"Firman Soebagyo", "dapil":"JAWA TENGAH I", "perolehan_suara":96262.0, "komisi":"Komisi IV" },
-  { "nama":"Nusron Wahid", "dapil":"JAWA TENGAH II", "perolehan_suara":135244.0, "komisi":"Komisi VI" },
-  { "nama":"Jamaludin Malik", "dapil":"JAWA TENGAH II", "perolehan_suara":71060.0, "komisi":"Komisi V" },
-  { "nama":"Riyono", "dapil":"JAWA TENGAH III", "perolehan_suara":123282.0, "komisi":"Komisi IV" },
-  { "nama":"Singgih Januratmoko", "dapil":"JAWA TENGAH IV", "perolehan_suara":125067.0, "komisi":"Komisi VI" },
-  { "nama":"A.S. Sukawijaya", "dapil":"JAWA TENGAH V", "perolehan_suara":71060.0, "komisi":"Komisi X" },
-  { "nama":"Panggah Susanto", "dapil":"JAWA TENGAH VI", "perolehan_suara":91104.0, "komisi":"Komisi IV" },
-  { "nama":"Taufiq R. Abdullah", "dapil":"JAWA TENGAH VII", "perolehan_suara":113337.0, "komisi":"Komisi I" },
-  { "nama":"Dito Ganinduto", "dapil":"JAWA TENGAH VIII", "perolehan_suara":104117.0, "komisi":"Komisi XI" },
-  { "nama":"Doni Akbar", "dapil":"JAWA TENGAH X", "perolehan_suara":110757.0, "komisi":"Komisi XI" },
-  { "nama":"Gandung Pardiman", "dapil":"DI YOGYAKARTA", "perolehan_suara":109867.0, "komisi":"Komisi VII" },
-  { "nama":"Adies Kadir", "dapil":"JAWA TIMUR I", "perolehan_suara":147185.0, "komisi":"Komisi III" },
-  { "nama":"M. Sarmuji", "dapil":"JAWA TIMUR VI", "perolehan_suara":183045.0, "komisi":"Komisi XI" },
-  { "nama":"Zainudin Amali", "dapil":"JAWA TIMUR I", "perolehan_suara":109867.0, "komisi":"Komisi VI" },
-  { "nama":"Ali Mufthi", "dapil":"JAWA TIMUR VII", "perolehan_suara":76877.0, "komisi":"Komisi V" },
-  { "nama":"H. Hasanuddin", "dapil":"JAWA TIMUR VIII", "perolehan_suara":68511.0, "komisi":"Komisi V" },
-  { "nama":"Haeny Relawati R", "dapil":"JAWA TIMUR IX", "perolehan_suara":173444.0, "komisi":"Komisi II" },
-  { "nama":"Tubagus Haerul", "dapil":"BANTEN I", "perolehan_suara":122469.0, "komisi":"Komisi I" },
-  { "nama":"Tubagus Chaeri W", "dapil":"BANTEN II", "perolehan_suara":114631.0, "komisi":"Komisi XI" },
-  { "nama":"Airin Rachmi Diany", "dapil":"BANTEN III", "perolehan_suara":302878.0, "komisi":"Komisi IX" },
-  { "nama":"Gde Sumarjaya", "dapil":"BALI", "perolehan_suara":90550.0, "komisi":"Komisi VI" },
-  { "nama":"Melkiades Laka", "dapil":"NUSA TENGGARA TIMUR II", "perolehan_suara":131150.0, "komisi":"Komisi XI" },
-  { "nama":"Maman Abdurrahman", "dapil":"KALIMANTAN BARAT I", "perolehan_suara":203514.0, "komisi":"Komisi VII" },
-  { "nama":"Mukhtarudin", "dapil":"KALIMANTAN BARAT I", "perolehan_suara":92147.0, "komisi":"Komisi VI" },
-  { "nama":"Bambang Heri P", "dapil":"KALIMANTAN SELATAN I", "perolehan_suara":161645.0, "komisi":"Komisi III" },
-  { "nama":"Rudy Mas'ud", "dapil":"KALIMANTAN TIMUR", "perolehan_suara":162772.0, "komisi":"Komisi VII" },
-  { "nama":"Muhidin Mohamad Said", "dapil":"SULAWESI TENGAH", "perolehan_suara":154301.0, "komisi":"Komisi XI" },
-  { "nama":"Beniyanto", "dapil":"SULAWESI TENGAH", "perolehan_suara":90078.0, "komisi":"Komisi XII" },
-  { "nama":"Hamka B. Kady M.S", "dapil":"SULAWESI SELATAN I", "perolehan_suara":119558.0, "komisi":"Komisi V" },
-  { "nama":"H.A.M. Nurdin Halid", "dapil":"SULAWESI SELATAN II", "perolehan_suara":70681.0, "komisi":"Komisi VI" },
-  { "nama":"H.M. Taufan Pawe", "dapil":"SULAWESI SELATAN II", "perolehan_suara":57955.0, "komisi":"Komisi II" },
-  { "nama":"Agustina Mangande", "dapil":"SULAWESI SELATAN III", "perolehan_suara":61394.0, "komisi":"Komisi II" },
-  { "nama":"Ridwan Bae", "dapil":"SULAWESI TENGGARA", "perolehan_suara":84530.0, "komisi":"Komisi V" },
-  { "nama":"Rusli Habibie", "dapil":"GORONTALO", "perolehan_suara":94781.0, "komisi":"Komisi VIII" },
-  { "nama":"Allen J.C. Pesik", "dapil":"MALUKU UTARA", "perolehan_suara":54231.0, "komisi":"Komisi V" },
-  { "nama":"Roberth Rouw", "dapil":"PAPUA", "perolehan_suara":114751.0, "komisi":"Komisi V" },
-  { "nama":"Alfons Manibui", "dapil":"PAPUA BARAT", "perolehan_suara":41782.0, "komisi":"Komisi IV" },
-  { "nama":"Soedeson Tandra", "dapil":"PAPUA TENGAH", "perolehan_suara":197995.0, "komisi":"Komisi III" },
-  { "nama":"Robert Joppy Kardinal", "dapil":"PAPUA BARAT DAYA", "perolehan_suara":53578.0, "komisi":"Komisi IV" }
-];
-
+export const dprMembersData = membersData as any[];
 
 // ============================================================================
 // 2. HELPER GENERATOR & DATA FORMATTER
@@ -101,14 +16,17 @@ export const generateSlug = (name: string) => {
     .replace(/(^-|-$)/g, '');
 };
 
-// Mengubah dprMembersData mentah menjadi format object yang lebih rapi
+// Mengubah dprMembersData mentah menjadi format object yang lebih rapi,
+// dan secara otomatis menyuntikkan fallback property 'bio' untuk SEO page.
 export const MOCK_MEMBERS = dprMembersData.map((member, index) => ({
   ...member,
   id: index + 1,
-  name: member.nama,
-  slug: generateSlug(member.nama),
+  name: member.nama || member.name,
+  slug: generateSlug(member.nama || member.name),
   // Menggunakan UI Avatars sebagai fallback otomatis apabila tidak ada gambar
-  image: `https://ui-avatars.com/api/?name=${encodeURIComponent(member.nama)}&background=e2e8f0&color=475569&size=400`,
+  image: member.image || member.foto || `https://ui-avatars.com/api/?name=${encodeURIComponent(member.nama || member.name || 'Anggota')}&background=e2e8f0&color=475569&size=400`,
+  // Menyediakan properti bio default agar tidak TypeError pada saat build SSR metadata
+  bio: `Profil lengkap ${member.nama || member.name}, Anggota DPR RI terpilih dari Fraksi Partai Golkar mewakili daerah pemilihan ${member.dapil}. Bertugas di ${member.komisi || 'DPR RI'}.`,
 }));
 
 // Fungsi Wajib untuk Halaman & Routing Next.js
@@ -119,7 +37,6 @@ export const getMembers = async () => {
 export const getMemberBySlug = async (slug: string) => {
   return MOCK_MEMBERS.find((member) => member.slug === slug) || null;
 };
-
 
 // ============================================================================
 // 3. DATA DASHBOARD, KABINET & BERITA
@@ -178,7 +95,6 @@ export const KABINET_ROSTER = [
   { role: "Wamen PPMI", name: "Christina Aryani", type: "Wakil Menteri", img: "https://upload.wikimedia.org/wikipedia/commons/2/28/Christina_Aryani.jpg", socials: { x: '#', ig: '#', fb: '#', yt: '#', threads: '#' } },
   { role: "Wamen Perdagangan", name: "Dyah Roro Esty", type: "Wakil Menteri", img: "https://upload.wikimedia.org/wikipedia/commons/6/63/Dyah_Roro_Esti_Widya_Putri.jpg", socials: { x: '#', ig: '#', fb: '#', yt: '#', threads: '#' } },
 ];
-
 
 // ============================================================================
 // 4. DATA PEMETAAN GEOSPASIAL (Peta Interaktif)

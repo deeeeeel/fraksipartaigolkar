@@ -271,23 +271,33 @@ const IndonesiaMap = ({ members = [] }: IndonesiaMapProps) => {
   }, []);
 
   useEffect(() => {
+    // Inject Leaflet CSS
     if (!document.getElementById('leaflet-css')) {
       const link = document.createElement('link');
       link.id = 'leaflet-css';
       link.rel = 'stylesheet';
-      link.href = '[https://unpkg.com/leaflet@1.9.4/dist/leaflet.css](https://unpkg.com/leaflet@1.9.4/dist/leaflet.css)';
+      link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
       document.head.appendChild(link);
     }
 
+    // Inject Leaflet JS
     if (!document.getElementById('leaflet-js')) {
       const script = document.createElement('script');
       script.id = 'leaflet-js';
-      script.src = '[https://unpkg.com/leaflet@1.9.4/dist/leaflet.js](https://unpkg.com/leaflet@1.9.4/dist/leaflet.js)';
+      script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
       script.async = true;
       script.onload = initMap;
       document.head.appendChild(script);
     } else if ((window as any).L) {
       initMap();
+    } else {
+      // Mengatasi race condition jika script ada tapi object L belum siap
+      const checkLeaflet = setInterval(() => {
+        if ((window as any).L) {
+          clearInterval(checkLeaflet);
+          initMap();
+        }
+      }, 100);
     }
 
     function initMap() {
@@ -310,7 +320,7 @@ const IndonesiaMap = ({ members = [] }: IndonesiaMapProps) => {
         mapInstance.current = map;
 
         // Basemap modern dan bersih
-        L.tileLayer('https://{s}[.basemaps.cartocdn.com/light_all/](https://.basemaps.cartocdn.com/light_all/){z}/{x}/{y}{r}.png', {
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
           attribution: '&copy; OpenStreetMap contributors',
           subdomains: 'abcd',
           maxZoom: 20,
@@ -396,21 +406,21 @@ const IndonesiaMap = ({ members = [] }: IndonesiaMapProps) => {
           const golkarSeats = membersList.length;
           const calegVotes = membersList.reduce((sum: number, m: Member) => sum + (Number(m.perolehan_suara) || 0), 0);
           
-          let fillColor = "#ef4444"; // Merah (Kosong/0 Kursi)
-          let statusLabel = "Kosong (Tidak Ada Wakil)";
+          let fillColor = "#ef4444"; 
+          let statusLabel = "Tidak Ada Wakil";
 
           if (golkarSeats === 1) {
-              fillColor = "#15803d"; // Hijau (1 Kursi)
+              fillColor = "#15803d"; 
               statusLabel = "Pemenang (1 Kursi)";
           } else if (golkarSeats > 1) {
-              fillColor = "#14532d"; // Hijau Tua (>1 Kursi)
+              fillColor = "#14532d"; 
               statusLabel = `Basis Kuat (${golkarSeats} Kursi)`;
           }
           
-          const radiusSize = golkarSeats > 0 ? Math.max(8, Math.min(20, calegVotes / 30000)) : 6;
+          const radiusSize = golkarSeats > 0 ? Math.max(8, Math.min(22, calegVotes / 30000)) : 6;
 
           const circle = L.circleMarker(dapil.coords, {
-            color: '#ffffff', weight: 1.5, fillColor: fillColor, fillOpacity: 0.85, radius: radiusSize
+            color: '#ffffff', weight: 2, fillColor: fillColor, fillOpacity: 0.85, radius: radiusSize
           }).addTo(markerGroupRef.current);
 
           let membersHTML = '';
@@ -543,7 +553,7 @@ const IndonesiaMap = ({ members = [] }: IndonesiaMapProps) => {
 
         {/* CUSTOM ZOOM CONTROLS */}
         {!isLoading && (
-          <div className="absolute bottom-20 md:bottom-6 right-6 z-[400] flex flex-col gap-2">
+          <div className="absolute bottom-6 right-6 z-[400] flex flex-col gap-2">
             <button 
               onClick={handleZoomIn} 
               className="w-10 h-10 bg-white/90 backdrop-blur shadow-md rounded-xl hover:bg-slate-50 flex items-center justify-center text-slate-700 font-bold text-xl pb-1 leading-none border border-slate-200/50 transition-all active:scale-95"
@@ -561,25 +571,25 @@ const IndonesiaMap = ({ members = [] }: IndonesiaMapProps) => {
           </div>
         )}
 
-        {/* PREMIUM FLOATING LEGEND (HORIZONTAL) */}
+        {/* PREMIUM FLOATING LEGEND */}
         {!isLoading && (
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 md:bottom-6 md:left-6 md:translate-x-0 z-[400] bg-white/95 backdrop-blur-md px-4 py-2.5 md:py-3 rounded-full shadow-xl border border-slate-200 flex flex-row items-center gap-3 md:gap-4 transition-all pointer-events-none w-[90%] sm:w-auto justify-center md:justify-start">
-            <div className="hidden md:flex items-center gap-1.5 border-r border-slate-200 pr-4">
+          <div className="absolute bottom-6 left-6 z-[400] bg-white/95 backdrop-blur-md p-4 rounded-2xl shadow-xl border border-white flex flex-col gap-3 transition-all min-w-[160px] pointer-events-none">
+            <div className="flex items-center gap-2 mb-1">
               <svg className="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" /></svg>
-              <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Legenda</span>
+              <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Legenda Peta</span>
             </div>
             
             {mapLevel === 'provinsi' ? (
-              <div className="flex flex-row items-center justify-between w-full md:w-auto gap-3 md:gap-5">
-                <div className="flex items-center gap-1.5 md:gap-2"><div className="w-3 h-3 rounded-full bg-[#ca8a04] shadow-inner border border-white/60"></div> <span className="text-[10px] md:text-xs font-bold text-slate-700 whitespace-nowrap">Kuat</span></div>
-                <div className="flex items-center gap-1.5 md:gap-2"><div className="w-3 h-3 rounded-full bg-[#eab308] shadow-inner border border-white/60"></div> <span className="text-[10px] md:text-xs font-bold text-slate-700 whitespace-nowrap">Stabil</span></div>
-                <div className="flex items-center gap-1.5 md:gap-2"><div className="w-3 h-3 rounded-full bg-[#ef4444] shadow-inner border border-white/60"></div> <span className="text-[10px] md:text-xs font-bold text-slate-700 whitespace-nowrap">Turun</span></div>
+              <div className="flex flex-col gap-2.5">
+                <div className="flex items-center gap-3"><div className="w-4 h-4 rounded-full bg-[#ca8a04] shadow-inner border border-white/60"></div> <span className="text-[13px] font-bold text-slate-700">Pemenang Kuat</span></div>
+                <div className="flex items-center gap-3"><div className="w-4 h-4 rounded-full bg-[#eab308] shadow-inner border border-white/60"></div> <span className="text-[13px] font-bold text-slate-700">Stabil / Naik</span></div>
+                <div className="flex items-center gap-3"><div className="w-4 h-4 rounded-full bg-[#ef4444] shadow-inner border border-white/60"></div> <span className="text-[13px] font-bold text-slate-700">Penurunan</span></div>
               </div>
             ) : (
-              <div className="flex flex-row items-center justify-between w-full md:w-auto gap-3 md:gap-5">
-                <div className="flex items-center gap-1.5 md:gap-2"><div className="w-3 h-3 rounded-full bg-[#14532d] shadow-inner border border-white/60"></div> <span className="text-[10px] md:text-xs font-bold text-slate-700 whitespace-nowrap">&gt;1 Kursi</span></div>
-                <div className="flex items-center gap-1.5 md:gap-2"><div className="w-3 h-3 rounded-full bg-[#15803d] shadow-inner border border-white/60"></div> <span className="text-[10px] md:text-xs font-bold text-slate-700 whitespace-nowrap">1 Kursi</span></div>
-                <div className="flex items-center gap-1.5 md:gap-2"><div className="w-3 h-3 rounded-full bg-[#ef4444] shadow-inner border border-white/60"></div> <span className="text-[10px] md:text-xs font-bold text-slate-700 whitespace-nowrap">0 Kursi</span></div>
+              <div className="flex flex-col gap-2.5">
+                <div className="flex items-center gap-3"><div className="w-4 h-4 rounded-full bg-[#14532d] shadow-inner border border-white/60"></div> <span className="text-[13px] font-bold text-slate-700">Basis Kuat (&gt;1 Kursi)</span></div>
+                <div className="flex items-center gap-3"><div className="w-4 h-4 rounded-full bg-[#15803d] shadow-inner border border-white/60"></div> <span className="text-[13px] font-bold text-slate-700">1 Kursi</span></div>
+                <div className="flex items-center gap-3"><div className="w-4 h-4 rounded-full bg-[#ef4444] shadow-inner border border-white/60"></div> <span className="text-[13px] font-bold text-slate-700">0 Kursi (Kosong)</span></div>
               </div>
             )}
           </div>
@@ -587,7 +597,7 @@ const IndonesiaMap = ({ members = [] }: IndonesiaMapProps) => {
         
         {/* SUBTLE FLOATING HINT */}
         {!isLoading && (
-          <div className="absolute top-5 left-1/2 -translate-x-1/2 z-[400] bg-slate-900/80 backdrop-blur-md px-5 py-2.5 rounded-full shadow-lg border border-white/10 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700 hidden md:block">
+          <div className="absolute top-5 left-1/2 -translate-x-1/2 z-[400] bg-slate-900/80 backdrop-blur-md px-5 py-2.5 rounded-full shadow-lg border border-white/10 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700">
             <p className="text-[11px] text-white font-semibold flex items-center gap-2.5 tracking-wide">
               <svg className="w-3.5 h-3.5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" /></svg>
               Arahkan kursor ke titik peta untuk info detail
