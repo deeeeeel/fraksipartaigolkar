@@ -1,4 +1,7 @@
-import React from 'react';
+'use client';
+
+import React, { useState } from 'react';
+import Image from 'next/image';
 import { Briefcase, AtSign } from 'lucide-react';
 import { KABINET_ROSTER } from '@/lib/data';
 
@@ -9,6 +12,8 @@ const IconInstagram = () => <svg width="14" height="14" viewBox="0 0 24 24" fill
 const IconYoutube = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2.5 7.1C2.6 5.8 3.6 4.8 5 4.7 7.4 4.5 12 4.5 12 4.5s4.6 0 7 .2c1.4.1 2.4 1.1 2.5 2.4.2 1.6.2 4.9.2 4.9s0 3.3-.2 4.9c-.1 1.3-1.1 2.3-2.5 2.4-2.4.2-7 .2-7 .2s-4.6 0-7-.2c-1.4-.1-2.4-1.1-2.5-2.4-.2-1.6-.2-4.9-.2-4.9s0-3.3.2-4.9z"/><path d="M10 15l5-3-5-3v6z"/></svg>;
 
 export default function KabinetRoster() {
+  const [imgErrors, setImgErrors] = useState<Record<number, boolean>>({});
+
   return (
     <div className="max-w-7xl mx-auto px-4 md:px-8 mt-12">
       <div className="flex items-center justify-between mb-6">
@@ -22,8 +27,14 @@ export default function KabinetRoster() {
              <div className="absolute -right-6 -top-6 w-32 h-32 bg-yellow-500/10 rounded-full blur-2xl group-hover:bg-yellow-500/20 transition-colors duration-500 pointer-events-none"></div>
              <div className="relative z-10 flex flex-col items-center text-center">
                <div className="relative w-16 h-16 md:w-20 md:h-20 mb-4 rounded-full overflow-hidden border-2 border-slate-600 group-hover:scale-105 transition-transform duration-300 bg-slate-700 shadow-inner">
-                  {/* Gunakan img standar utk bypass error Next Image di sumber URL luar */}
-                  <img src={kabinet.img} alt={kabinet.name} className="w-full h-full object-cover" />
+                  <Image 
+                    src={imgErrors[i] ? `https://ui-avatars.com/api/?name=${encodeURIComponent(kabinet.name)}&background=0f172a&color=facc15&size=200` : kabinet.img} 
+                    alt={kabinet.name} 
+                    fill 
+                    className="object-cover" 
+                    sizes="(max-width: 768px) 64px, 80px" 
+                    onError={() => setImgErrors(prev => ({ ...prev, [i]: true }))}
+                  />
                </div>
                <span className={`text-[8px] md:text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded border mb-2 ${
                   kabinet.type === 'Menteri' ? 'bg-yellow-400 text-slate-900 border-yellow-300' :
