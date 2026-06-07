@@ -252,12 +252,12 @@ export const HomeView = ({ initialMembers = [], komisiList = [] }: { initialMemb
         <div className="py-8 border-t border-slate-200 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-gradient-to-br from-yellow-300 to-yellow-500 rounded-lg flex items-center justify-center shadow-sm border border-yellow-200">
-              <span className="text-xs font-black text-slate-900">BM</span>
+              <span className="text-xs font-black text-slate-900">SSA</span>
             </div>
-            <span className="text-sm font-black text-slate-800 tracking-tight">Banyan Media</span>
+            <span className="text-sm font-black text-slate-800 tracking-tight">PT Studio Satu Akun</span>
           </div>
           <p className="text-xs font-bold text-slate-400 text-center md:text-right">
-            &copy; {new Date().getFullYear()} Banyan Media. All rights reserved.
+            &copy; {new Date().getFullYear()} PT Studio Satu Akun. All rights reserved.
           </p>
         </div>
       </footer>
